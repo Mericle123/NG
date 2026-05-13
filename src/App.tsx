@@ -157,6 +157,7 @@ const projects = [
     description:
       "A blockchain platform for tokenizing bonds and exploring secure digital asset trading workflows.",
     stack: ["Blockchain", "Tokenization"],
+    code: "https://github.com/Mericle123/rseb_bond_tokenization",
     size: "large",
   },
   {
@@ -328,12 +329,13 @@ function CustomCursor() {
 
   useEffect(() => {
     let frame = 0;
+    let isHoveringInteractive = false;
     const position = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     const ringPosition = { x: position.x, y: position.y };
 
     const render = () => {
-      ringPosition.x += (position.x - ringPosition.x) * 0.32;
-      ringPosition.y += (position.y - ringPosition.y) * 0.32;
+      ringPosition.x += (position.x - ringPosition.x) * 0.42;
+      ringPosition.y += (position.y - ringPosition.y) * 0.42;
 
       if (ring.current) {
         ring.current.style.transform = `translate3d(${ringPosition.x - 18}px, ${ringPosition.y - 18}px, 0)`;
@@ -348,23 +350,20 @@ function CustomCursor() {
     const move = (event: MouseEvent) => {
       position.x = event.clientX;
       position.y = event.clientY;
-    };
-    const enter = (event: Event) => {
-      if ((event.target as HTMLElement).closest("a, button, input, textarea, .magnetic")) setActive(true);
-    };
-    const leave = (event: Event) => {
-      if ((event.target as HTMLElement).closest("a, button, input, textarea, .magnetic")) setActive(false);
+      const target = document.elementFromPoint(event.clientX, event.clientY) as HTMLElement | null;
+      const nextHovering = Boolean(target?.closest("a, button, input, textarea, .magnetic"));
+
+      if (nextHovering !== isHoveringInteractive) {
+        isHoveringInteractive = nextHovering;
+        setActive(nextHovering);
+      }
     };
 
     frame = requestAnimationFrame(render);
     window.addEventListener("mousemove", move);
-    document.addEventListener("mouseover", enter);
-    document.addEventListener("mouseout", leave);
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("mousemove", move);
-      document.removeEventListener("mouseover", enter);
-      document.removeEventListener("mouseout", leave);
     };
   }, []);
 
@@ -868,7 +867,7 @@ function Projects() {
           >
             <motion.article
               whileHover={{ y: -8 }}
-              className="project-card group relative flex h-full overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#111111]"
+              className="project-card group relative flex h-full overflow-hidden rounded-[24px] border border-[#d6c3a5]/20 bg-[#14110d]"
             >
               <Image
                 src={project.image}
@@ -877,7 +876,7 @@ function Projects() {
                 priority={index === 0}
                 className={`object-cover transition duration-700 group-hover:scale-110 ${index === 0 ? "object-left-top" : ""}`}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/50 to-[#0a0a0a]/5" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/95 via-[#0a0a0a]/48 to-[#0a0a0a]/5" />
               <div className="absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100">
                 <div className="absolute inset-x-0 top-0 h-1/2 bg-[radial-gradient(circle_at_50%_0%,rgba(214,195,165,0.28),transparent_62%)]" />
               </div>

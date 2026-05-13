@@ -87,24 +87,27 @@ button {
 .custom-cursor-ring {
   width: 36px;
   height: 36px;
-  border: 1px solid rgba(214, 195, 165, 0.7);
+  border: 1px solid rgba(214, 195, 165, 0.62);
   border-radius: 999px;
-  mix-blend-mode: difference;
+  background: rgba(214, 195, 165, 0);
+  box-shadow: 0 0 0 rgba(214, 195, 165, 0);
   transition:
-    scale 160ms ease,
-    background 160ms ease,
-    border-color 160ms ease;
+    scale 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    background 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .custom-cursor-ring.is-active {
-  scale: 1.72;
-  border-color: rgba(245, 241, 232, 0.2);
-  background: rgba(214, 195, 165, 0.18);
+  scale: 1.95;
+  border-color: rgba(214, 195, 165, 0.85);
+  background: rgba(214, 195, 165, 0.24);
+  box-shadow: 0 0 36px rgba(214, 195, 165, 0.24);
 }
 
 .custom-cursor-dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 999px;
   background: #d6c3a5;
   box-shadow: 0 0 18px rgba(214, 195, 165, 0.55);
@@ -114,8 +117,8 @@ button {
 }
 
 .custom-cursor-dot.is-active {
-  scale: 0.55;
-  opacity: 0.82;
+  scale: 0;
+  opacity: 0;
 }
 
 .cinema-glow {
@@ -137,8 +140,14 @@ button {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(214, 195, 165, 0.2);
   pointer-events: none;
+}
+
+.project-card {
+  box-shadow:
+    inset 0 1px 0 rgba(245, 241, 232, 0.08),
+    0 28px 90px rgba(0, 0, 0, 0.38);
 }
 
 .hero-ui-card {
@@ -541,7 +550,14 @@ main[data-theme="light"] .grain {
 
 main[data-theme="light"] .custom-cursor-ring {
   border-color: rgba(139, 111, 70, 0.75);
-  mix-blend-mode: normal;
+  background: rgba(139, 111, 70, 0);
+  box-shadow: 0 0 0 rgba(139, 111, 70, 0);
+}
+
+main[data-theme="light"] .custom-cursor-ring.is-active {
+  border-color: rgba(139, 111, 70, 0.78);
+  background: rgba(139, 111, 70, 0.18);
+  box-shadow: 0 0 34px rgba(139, 111, 70, 0.18);
 }
 
 main[data-theme="light"] .custom-cursor-dot {
@@ -571,6 +587,7 @@ main[data-theme="light"] #projects .text-\[\#b8b1a6\] {
 }
 
 main[data-theme="light"] #projects .project-card {
+  border-color: rgba(139, 111, 70, 0.28) !important;
   background-color: #17130f !important;
   box-shadow: 0 34px 110px rgba(65, 44, 25, 0.18);
 }
