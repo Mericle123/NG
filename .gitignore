@@ -12,6 +12,7 @@
 
 # production
 /build
+/dist
 
 # misc
 .DS_Store
@@ -31,3 +32,8 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# local scratch exports
+/assets
+/docs
+/images

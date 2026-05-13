@@ -1,6 +1,3 @@
-"use client";
-
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 import gsap from "gsap";
@@ -41,6 +38,29 @@ import {
 } from "react-icons/si";
 
 gsap.registerPlugin(ScrollTrigger);
+
+type PortfolioImageProps = {
+  src: string;
+  alt: string;
+  className?: string;
+  fill?: boolean;
+  priority?: boolean;
+  width?: number;
+  height?: number;
+};
+
+function Image({ src, alt, className = "", fill = false, priority, width, height }: PortfolioImageProps) {
+  return (
+    <img
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      loading={priority ? "eager" : "lazy"}
+      className={`${fill ? "absolute inset-0 h-full w-full" : ""} ${className}`.trim()}
+    />
+  );
+}
 
 const navItems = ["About", "Skills", "Projects", "Journey", "Contact"];
 
@@ -505,7 +525,7 @@ function Hero() {
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, y: -18, filter: "blur(10px)" }}
                 transition={{ duration: 0.45 }}
-                className="font-serif italic text-[#f5f1e8]"
+                className="hero-role font-serif italic text-[#f5f1e8]"
               >
                 {roles[role]}
               </motion.span>
