@@ -57,6 +57,8 @@ function Image({ src, alt, className = "", fill = false, priority, width, height
       width={width}
       height={height}
       loading={priority ? "eager" : "lazy"}
+      decoding="async"
+      fetchPriority={priority ? "high" : "auto"}
       className={`${fill ? "absolute inset-0 h-full w-full" : ""} ${className}`.trim()}
     />
   );
@@ -151,7 +153,7 @@ const projects = [
   {
     title: "RSEB Bond Tokenization",
     category: "Full Stack",
-    image: "/images/RSEB.png",
+    image: "/images/optimized/RSEB-1200.webp",
     description:
       "A blockchain platform for tokenizing bonds and exploring secure digital asset trading workflows.",
     stack: ["Blockchain", "Tokenization"],
@@ -160,7 +162,7 @@ const projects = [
   {
     title: "Certifi",
     category: "Full Stack",
-    image: "/images/certifi.jpeg",
+    image: "/images/optimized/certifi-1100.webp",
     description:
       "A blockchain certificate system that stores verified credentials with IPFS so academic records stay secure, portable, and easy to validate.",
     stack: ["Blockchain", "IPFS", "React", "Node"],
@@ -170,7 +172,7 @@ const projects = [
   {
     title: "Keychain",
     category: "Creative Development",
-    image: "/images/realestate.jpeg",
+    image: "/images/optimized/realestate-1100.webp",
     description:
       "A real-estate management experience where properties become blockchain-backed NFTs with clearer ownership flows.",
     stack: ["NFT", "Solidity", "React", "UX"],
@@ -180,7 +182,7 @@ const projects = [
   {
     title: "Taxico",
     category: "Web Apps",
-    image: "/images/taxico.jpeg",
+    image: "/images/optimized/taxico-1100.webp",
     description:
       "A ride service platform for booking, driver profiles, experience tracking, and earnings visibility.",
     stack: ["Agile", "Node", "React", "SQL"],
@@ -190,7 +192,7 @@ const projects = [
   {
     title: "Applymate",
     category: "UI Design",
-    image: "/images/applymate.png",
+    image: "/images/optimized/applymate-1100.webp",
     description:
       "A student admissions interface designed to simplify submissions, tracking, and applicant management.",
     stack: ["UI/UX", "React", "Figma"],
@@ -200,7 +202,7 @@ const projects = [
   {
     title: "Areo Bhutan",
     category: "Web Apps",
-    image: "/images/areo.png",
+    image: "/images/optimized/areo-1100.webp",
     description:
       "A travel booking platform for flights, hotels, and curated services around Bhutan.",
     stack: ["Travel", "Frontend", "Booking"],
@@ -550,7 +552,7 @@ function Hero() {
             transition={{ duration: 1, delay: 0.2 }}
             className="floating-card absolute left-1/2 top-8 h-[560px] w-[84%] -translate-x-1/2 overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#111111]"
           >
-            <Image src="/images/image.png" alt="Ngawang Gyeltshen portrait" fill priority className="object-cover" />
+            <Image src="/images/optimized/image-900.webp" alt="Ngawang Gyeltshen portrait" fill priority className="object-cover" />
           </motion.div>
         </div>
       </motion.div>
@@ -577,7 +579,7 @@ function About() {
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
         <Reveal className="relative">
           <div className="aspect-[4/5] overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#111111]">
-            <Image src="/images/ng1.jpg" alt="Ngawang Gyeltshen" width={900} height={1125} className="h-full w-full object-cover" />
+            <Image src="/images/optimized/ng1-760.webp" alt="Ngawang Gyeltshen" width={760} height={1012} className="h-full w-full object-cover" />
           </div>
           <div className="absolute -right-4 top-10 grid gap-3 md:-right-8">
             {stats.map((stat) => (
