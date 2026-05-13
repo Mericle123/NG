@@ -844,144 +844,70 @@ function Skills() {
 }
 
 function Projects() {
-  const [featuredProject, ...galleryProjects] = projects;
+  const projectLayout = [
+    "lg:col-span-7 lg:row-span-2 min-h-[620px]",
+    "lg:col-span-5 min-h-[360px]",
+    "lg:col-span-5 min-h-[360px]",
+    "lg:col-span-4 min-h-[430px]",
+    "lg:col-span-4 min-h-[430px]",
+    "lg:col-span-4 min-h-[430px]",
+  ];
 
   return (
     <section id="projects" className="relative overflow-hidden px-5 py-24 md:px-8 lg:py-36">
       <SectionHeader eyebrow="Selected Work" title="Asymmetrical builds with product gravity." />
 
-      <Reveal className="mx-auto max-w-7xl">
-        <motion.article
-          whileHover={{ y: -6 }}
-          className="project-feature relative overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#111111] p-4 md:p-5"
-        >
-          <div className="grid gap-5 lg:grid-cols-[0.72fr_1.28fr]">
-            <div className="relative z-10 flex flex-col justify-between rounded-[22px] border border-white/[0.08] bg-[#0a0a0a]/55 p-6 md:p-8 lg:p-10">
-              <div>
-                <div className="mb-7 flex flex-wrap items-center gap-3">
-                  <span className="rounded-full border border-white/10 bg-[#d6c3a5] px-4 py-2 text-xs uppercase tracking-[0.18em] text-black">
-                    Featured Case Study
-                  </span>
-                  <span className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs uppercase tracking-[0.18em] text-[#d6c3a5]">
-                    {featuredProject.category}
-                  </span>
-                </div>
-                <h3 className="max-w-xl font-serif text-[clamp(3.2rem,6vw,6.8rem)] leading-[0.82] text-[#f5f1e8]">
-                  {featuredProject.title}
-                </h3>
-                <p className="mt-7 max-w-xl text-base leading-8 text-[#b8b1a6]">
-                  {featuredProject.description} Built as a high-trust financial interface where clarity, auditability, and blockchain architecture matter as much as visual polish.
-                </p>
-              </div>
-
-              <div className="mt-10 grid gap-3">
-                {[
-                  ["Focus", "Bond market"],
-                  ["Layer", "Blockchain"],
-                  ["Outcome", "Transparent trading"],
-                ].map(([label, value]) => (
-                  <div key={label} className="rounded-[20px] border border-white/[0.08] bg-white/[0.04] p-4 backdrop-blur-xl">
-                    <p className="text-xs uppercase tracking-[0.22em] text-[#d6c3a5]">{label}</p>
-                    <p className="mt-3 font-serif text-2xl leading-none text-[#f5f1e8]">{value}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="rseb-showcase relative min-h-[560px] overflow-hidden rounded-[22px] border border-white/[0.08] bg-[#0a0a0a] p-4 md:p-6">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_18%,rgba(214,195,165,0.22),transparent_28%),radial-gradient(circle_at_82%_34%,rgba(118,67,255,0.28),transparent_36%)]" />
-              <div className="relative grid h-full gap-4 lg:grid-cols-[1fr_0.82fr]">
-                <div className="rseb-market-panel relative overflow-hidden rounded-[22px] border border-white/[0.08] bg-[#17130f] p-6">
-                  <div className="absolute inset-0 opacity-70">
-                    <div className="rseb-grid" />
-                  </div>
-                  <div className="relative flex items-center justify-between">
-                    <div>
-                      <p className="text-xs uppercase tracking-[0.28em] text-[#d6c3a5]">Bhutan Digital</p>
-                      <p className="mt-3 font-serif text-[clamp(2.8rem,5.4vw,6.8rem)] leading-[0.78] text-[#f5f1e8]">
-                        Bond Market
-                      </p>
-                    </div>
-                    <span className="rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-xs uppercase tracking-[0.2em] text-[#d6c3a5]">
-                      Live
-                    </span>
-                  </div>
-                  <div className="relative mt-10 grid gap-3 sm:grid-cols-3">
-                    {["Issue", "Trade", "Settle"].map((step, index) => (
-                      <div key={step} className="rounded-[18px] border border-white/[0.08] bg-white/[0.05] p-4">
-                        <p className="font-serif text-3xl text-[#f5f1e8]">0{index + 1}</p>
-                        <p className="mt-2 text-xs uppercase tracking-[0.2em] text-[#b8b1a6]">{step}</p>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="relative mt-10 h-24 overflow-hidden rounded-[18px] border border-white/[0.08] bg-black/20 p-4">
-                    <div className="rseb-chart-line" />
-                    <div className="absolute bottom-4 left-4 right-4 flex items-end gap-2">
-                      {[42, 70, 54, 86, 66, 92, 74, 96].map((height, index) => (
-                        <span key={`${height}-${index}`} className="rseb-chart-bar" style={{ height: `${height}%`, animationDelay: `${index * 0.1}s` }} />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="relative grid gap-4">
-                  <div className="rounded-[22px] border border-white/[0.08] bg-white/[0.05] p-5 backdrop-blur-xl">
-                    <p className="text-xs uppercase tracking-[0.24em] text-[#d6c3a5]">Stack</p>
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {featuredProject.stack.map((item) => (
-                        <span key={item} className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-2 text-xs text-[#f5f1e8]">
-                          {item}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="relative min-h-[250px] overflow-hidden rounded-[22px] border border-white/[0.08]">
-                    <Image
-                      src={featuredProject.image}
-                      alt={`${featuredProject.title} preview`}
-                      fill
-                      priority
-                      className="scale-125 object-cover object-left-top opacity-90"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/80 via-transparent to-transparent" />
-                  </div>
-                  <div className="rounded-[22px] border border-white/[0.08] bg-white/[0.05] p-5 backdrop-blur-xl">
-                    <p className="font-serif text-3xl text-[#f5f1e8]">Transparent, fast, and traceable.</p>
-                    <p className="mt-3 text-sm leading-6 text-[#b8b1a6]">A focused interface concept for moving bond workflows into a clearer digital market.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.article>
-      </Reveal>
-
-      <div className="mx-auto mt-8 grid max-w-7xl gap-5 md:grid-cols-2 xl:grid-cols-5">
-        {galleryProjects.map((project, index) => (
+      <div className="mx-auto grid max-w-7xl auto-rows-[minmax(320px,auto)] gap-5 md:grid-cols-2 lg:grid-cols-12">
+        {projects.map((project, index) => (
           <Reveal
             key={project.title}
             delay={index * 0.04}
-            className={index === 4 ? "md:col-span-2 xl:col-span-1" : ""}
+            className={projectLayout[index]}
           >
             <motion.article
               whileHover={{ y: -8 }}
-              className="project-card group relative flex h-full min-h-[430px] overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#111111]"
+              className="project-card group relative flex h-full overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#111111]"
             >
-              <Image src={project.image} alt={`${project.title} preview`} fill className="object-cover transition duration-700 group-hover:scale-110" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/55 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 z-10 p-5 md:p-7">
-                <div className="mb-5 flex flex-wrap items-center gap-2">
-                  <span className="rounded-full border border-white/10 bg-black/30 px-3 py-1 text-xs uppercase tracking-[0.18em] text-[#d6c3a5] backdrop-blur">
-                    {project.category}
+              <Image
+                src={project.image}
+                alt={`${project.title} preview`}
+                fill
+                priority={index === 0}
+                className={`object-cover transition duration-700 group-hover:scale-110 ${index === 0 ? "object-left-top" : ""}`}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/50 to-[#0a0a0a]/5" />
+              <div className="absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100">
+                <div className="absolute inset-x-0 top-0 h-1/2 bg-[radial-gradient(circle_at_50%_0%,rgba(214,195,165,0.28),transparent_62%)]" />
+              </div>
+
+              <div className="absolute left-5 top-5 z-10 flex flex-wrap items-center gap-2 md:left-7 md:top-7">
+                {index === 0 && (
+                  <span className="rounded-full border border-white/10 bg-[#d6c3a5] px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-black shadow-2xl">
+                    Featured
                   </span>
-                  {project.stack.slice(0, index < 2 ? 4 : 2).map((item) => (
+                )}
+                <span className="rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-[#d6c3a5] backdrop-blur">
+                  {project.category}
+                </span>
+              </div>
+
+              <div className="absolute inset-x-0 bottom-0 z-10 p-5 md:p-7 lg:p-8">
+                <div className="mb-5 flex flex-wrap items-center gap-2 opacity-90">
+                  <span className="rounded-full border border-white/10 bg-black/30 px-3 py-1 text-xs uppercase tracking-[0.18em] text-[#d6c3a5] backdrop-blur">
+                    {index === 0 ? "Blockchain" : project.stack[0]}
+                  </span>
+                  {project.stack.slice(index === 0 ? 1 : 1, index === 0 ? 3 : 3).map((item) => (
                     <span key={item} className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-[#f5f1e8] backdrop-blur">
                       {item}
                     </span>
                   ))}
                 </div>
-                <h3 className="font-serif text-[clamp(2.2rem,4.2vw,4.8rem)] leading-none text-[#f5f1e8]">{project.title}</h3>
-                <p className="mt-4 max-w-2xl text-sm leading-6 text-[#b8b1a6] md:text-base">{project.description}</p>
+                <h3 className={`${index === 0 ? "max-w-2xl text-[clamp(3.4rem,7vw,7.8rem)]" : "text-[clamp(2.35rem,4.2vw,4.8rem)]"} font-serif leading-none text-[#f5f1e8]`}>
+                  {project.title}
+                </h3>
+                <p className={`${index === 0 ? "max-w-2xl text-base md:text-lg" : "max-w-xl text-sm md:text-base"} mt-4 leading-7 text-[#b8b1a6]`}>
+                  {project.description}
+                </p>
                 <div className="mt-5 flex flex-wrap gap-3">
                   {project.code ? (
                     <a
