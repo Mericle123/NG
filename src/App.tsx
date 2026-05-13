@@ -274,26 +274,10 @@ function MagneticButton({
   href: string;
   className?: string;
 }) {
-  const ref = useRef<HTMLAnchorElement>(null);
-
-  const handleMove = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    const node = ref.current;
-    if (!node) return;
-    const rect = node.getBoundingClientRect();
-    const x = event.clientX - rect.left - rect.width / 2;
-    const y = event.clientY - rect.top - rect.height / 2;
-    node.style.transform = `translate(${x * 0.18}px, ${y * 0.18}px)`;
-  };
-
   return (
     <a
-      ref={ref}
       href={href}
-      onMouseMove={handleMove}
-      onMouseLeave={() => {
-        if (ref.current) ref.current.style.transform = "translate(0, 0)";
-      }}
-      className={`magnetic inline-flex items-center justify-center gap-3 rounded-full border border-white/10 px-6 py-4 text-sm uppercase tracking-[0.22em] text-[#f5f1e8] transition duration-300 hover:border-[#d6c3a5]/70 hover:bg-[#d6c3a5] hover:text-[#0a0a0a] ${className}`}
+      className={`magnetic inline-flex items-center justify-center gap-3 rounded-full border border-white/10 px-6 py-4 text-sm uppercase tracking-[0.22em] text-[#f5f1e8] transition-[border-color,background-color,color,box-shadow] duration-300 hover:border-[#d6c3a5]/70 hover:bg-[#d6c3a5] hover:text-[#0a0a0a] hover:shadow-[0_18px_60px_rgba(214,195,165,0.2)] ${className}`}
     >
       {children}
     </a>
@@ -334,8 +318,8 @@ function CustomCursor() {
     const ringPosition = { x: position.x, y: position.y };
 
     const render = () => {
-      ringPosition.x += (position.x - ringPosition.x) * 0.42;
-      ringPosition.y += (position.y - ringPosition.y) * 0.42;
+      ringPosition.x += (position.x - ringPosition.x) * 0.62;
+      ringPosition.y += (position.y - ringPosition.y) * 0.62;
 
       if (ring.current) {
         ring.current.style.transform = `translate3d(${ringPosition.x - 18}px, ${ringPosition.y - 18}px, 0)`;

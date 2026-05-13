@@ -99,10 +99,10 @@ button {
 }
 
 .custom-cursor-ring.is-active {
-  scale: 1.95;
+  scale: 1.7;
   border-color: rgba(214, 195, 165, 0.85);
-  background: rgba(214, 195, 165, 0.24);
-  box-shadow: 0 0 36px rgba(214, 195, 165, 0.24);
+  background: rgba(214, 195, 165, 0.2);
+  box-shadow: 0 0 30px rgba(214, 195, 165, 0.2);
 }
 
 .custom-cursor-dot {
