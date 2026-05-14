@@ -251,6 +251,21 @@ const galleryItems = portraits.map((image, index) => ({
   ][index],
 }));
 
+const galleryStories = [
+  ["Focused, direct, systems-minded", "A frame about concentration and the quiet confidence behind product decisions.", "Centered portrait, close crop, low distraction, high eye contact."],
+  ["Reflective, intimate, identity-led", "A mirror study that turns the camera back into a design object: observer, subject and interface in one frame.", "Vertical reflection, monochrome contrast, controlled personal presence."],
+  ["Raw, casual, documentary", "A candid study of movement and self-documentation, useful as a human counterpoint to the more polished product work.", "Close perspective, natural distortion, personal texture."],
+  ["In transit, practical, low-light", "A reminder that digital creators move between contexts, solving with whatever space they have.", "Confined interior, dark palette, directional light."],
+  ["Nocturnal, cinematic, restrained", "Low light gives the archive a quieter rhythm, like an interface in dark mode waiting for input.", "Dark field, soft highlights, atmospheric framing."],
+  ["Gentle, warm, observant", "A soft-light frame that brings warmth into the archive and balances the more technical identity of the portfolio.", "Warm ambient light, layered background, calm focal point."],
+  ["Natural, grounded, open", "A garden frame introduces organic texture into an otherwise digital systems language.", "Green accents, natural depth, relaxed posture."],
+  ["Expansive, Bhutan-rooted, calm", "A mountain signal: local context, scale, and the feeling of building from a specific place toward global quality.", "Outdoor space, distant depth, environmental storytelling."],
+  ["Urban, late, electric", "Night city energy gives the archive a modern creative pulse, between product work and lived experience.", "Artificial light, dark contrast, city texture."],
+  ["Soft, atmospheric, uncertain", "Fog becomes a metaphor for early-stage product thinking: shape appears slowly through iteration.", "Muted contrast, blurred horizon, quiet negative space."],
+  ["Quiet, personal, still", "A pause in the archive, showing the reflective side of a systems thinker.", "Low movement, restrained contrast, personal scale."],
+  ["Open, forward, directional", "A road frame for momentum: learning, shipping, and moving into the next version.", "Linear depth, outdoor light, forward visual pull."],
+];
+
 function Reveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
   return (
     <motion.div
@@ -398,8 +413,8 @@ function Navbar() {
   return (
     <motion.header animate={{ y: hidden ? -120 : 0 }} transition={{ duration: 0.35 }} className="fixed inset-x-0 top-0 z-50 px-4 py-5 md:px-8">
       <nav className="mx-auto flex max-w-[1500px] items-center justify-between rounded-full border border-white/10 bg-black/35 px-4 py-3 shadow-2xl shadow-black/30 backdrop-blur-2xl md:px-6">
-        <a href="#home" className="text-sm font-semibold text-white">
-          Ngawang<span className="text-[#ff4d2a]">.</span>
+        <a href="#home" aria-label="NG home" className="brand-mark">
+          <span>N</span><span>G</span>
         </a>
         <div className="hidden items-center gap-2 lg:flex">
           {navItems.map((item) => (
@@ -424,7 +439,7 @@ function Navbar() {
         {open && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 bg-[#060606] p-5 text-white lg:hidden">
             <div className="flex items-center justify-between">
-              <span className="font-semibold">Ngawang.</span>
+              <span className="brand-mark"><span>N</span><span>G</span></span>
               <button onClick={() => setOpen(false)} aria-label="Close menu" className="grid size-12 place-items-center rounded-full border border-white/15">
                 <FiX />
               </button>
@@ -993,7 +1008,9 @@ function GalleryFlowItem({
 function Gallery() {
   const ref = useRef<HTMLElement>(null);
   const [active, setActive] = useState(galleryItems[0]);
+  const [storyOpen, setStoryOpen] = useState(false);
   const activeIndex = galleryItems.findIndex((item) => item.image === active.image);
+  const story = galleryStories[Math.max(activeIndex, 0)];
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const fieldY = useTransform(scrollYProgress, [0, 1], [-34, 34]);
   const fieldScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.96, 1, 0.98]);
@@ -1009,6 +1026,11 @@ function Gallery() {
       "--tilt": `${tilt}deg`,
       "--delay": `${index * -0.35}s`,
     } as CSSProperties;
+  };
+
+  const showNextStory = () => {
+    const next = galleryItems[(activeIndex + 1) % galleryItems.length];
+    setActive(next);
   };
 
   return (
@@ -1060,9 +1082,9 @@ function Gallery() {
                   <span>A cinematic frame from the personal archive, composed as a curated digital exhibition piece.</span>
                 </motion.div>
               </AnimatePresence>
-              <a href="#contact" className="orbital-cta">
+              <button type="button" onClick={() => setStoryOpen(true)} className="orbital-cta">
                 View story <FiArrowUpRight />
-              </a>
+              </button>
             </div>
           </motion.article>
 
@@ -1098,6 +1120,52 @@ function Gallery() {
           </div>
         </motion.div>
       </div>
+      <AnimatePresence>
+        {storyOpen && (
+          <motion.div
+            className="story-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <button type="button" aria-label="Close story" className="story-backdrop" onClick={() => setStoryOpen(false)} />
+            <motion.article
+              className="story-panel"
+              initial={{ opacity: 0, y: 34, scale: 0.96, filter: "blur(14px)" }}
+              animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: 24, scale: 0.96, filter: "blur(14px)" }}
+              transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="story-media">
+                <img src={active.image} alt={active.title} onError={imageFallback} />
+              </div>
+              <div className="story-content">
+                <p className="story-kicker">{active.number} / Visual Story</p>
+                <h3>{active.title}</h3>
+                <p className="story-lead">{story[1]}</p>
+                <div className="story-grid">
+                  <div>
+                    <span>Mood</span>
+                    <strong>{story[0]}</strong>
+                  </div>
+                  <div>
+                    <span>Composition</span>
+                    <strong>{story[2]}</strong>
+                  </div>
+                  <div>
+                    <span>Portfolio role</span>
+                    <strong>Human texture inside a technical product-design identity.</strong>
+                  </div>
+                </div>
+                <div className="story-actions">
+                  <button type="button" onClick={() => setStoryOpen(false)} className="orbital-cta secondary">Back to orbit</button>
+                  <button type="button" onClick={showNextStory} className="orbital-cta">Next story <FiArrowUpRight /></button>
+                </div>
+              </div>
+            </motion.article>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
@@ -1214,7 +1282,28 @@ export default function App() {
       frame = requestAnimationFrame(raf);
     };
     frame = requestAnimationFrame(raf);
+
+    const onAnchorClick = (event: globalThis.MouseEvent) => {
+      const target = event.target as Element | null;
+      const anchor = target?.closest("a[href^='#']") as HTMLAnchorElement | null;
+      if (!anchor) return;
+      const id = anchor.getAttribute("href");
+      if (!id || id === "#") return;
+      const section = document.querySelector(id);
+      if (!section) return;
+      event.preventDefault();
+      lenis.scrollTo(section as HTMLElement, {
+        offset: -78,
+        duration: 1.35,
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      });
+      window.history.pushState(null, "", id);
+    };
+
+    document.addEventListener("click", onAnchorClick);
+
     return () => {
+      document.removeEventListener("click", onAnchorClick);
       cancelAnimationFrame(frame);
       lenis.destroy();
     };
