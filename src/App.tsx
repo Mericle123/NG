@@ -1,304 +1,263 @@
-import { useEffect, useRef, useState } from "react";
+import { type CSSProperties, type MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import {
-  FiActivity,
   FiArrowDown,
   FiArrowUpRight,
-  FiCode,
-  FiCpu,
   FiGithub,
   FiGitlab,
-  FiGlobe,
-  FiHeart,
   FiInstagram,
   FiLinkedin,
   FiMail,
-  FiMessageCircle,
   FiMapPin,
   FiMenu,
-  FiMoon,
   FiPhone,
-  FiSun,
-  FiUsers,
   FiX,
 } from "react-icons/fi";
-import {
-  SiFigma,
-  SiFramer,
-  SiJavascript,
-  SiMongodb,
-  SiNextdotjs,
-  SiNodedotjs,
-  SiReact,
-  SiTailwindcss,
-  SiTypescript,
-} from "react-icons/si";
 
-gsap.registerPlugin(ScrollTrigger);
-
-type PortfolioImageProps = {
-  src: string;
-  alt: string;
-  className?: string;
-  fill?: boolean;
-  priority?: boolean;
-  width?: number;
-  height?: number;
+type Project = {
+  title: string;
+  category: string;
+  role: string;
+  year: string;
+  image: string;
+  summary: string;
+  stack: string[];
+  result: string;
+  href?: string;
 };
 
-function Image({ src, alt, className = "", fill = false, priority, width, height }: PortfolioImageProps) {
-  return (
-    <img
-      src={src}
-      alt={alt}
-      width={width}
-      height={height}
-      loading={priority ? "eager" : "lazy"}
-      decoding="async"
-      fetchPriority={priority ? "high" : "auto"}
-      className={`${fill ? "absolute inset-0 h-full w-full" : ""} ${className}`.trim()}
-    />
-  );
-}
+const navItems = ["Work", "About", "Skills", "Experience", "Contact"];
 
-const navItems = ["About", "Skills", "Projects", "Journey", "Contact"];
-
-const roles = [
-  "Developer",
-  "UI/UX Designer",
-  "Creative Technologist",
-  "Frontend Engineer",
-  "Blockchain Developer",
-];
-
-const stats = [
-  { value: "08+", label: "Featured builds" },
-  { value: "2026", label: "GCIT graduate path" },
-  { value: "95%", label: "Figma craft level" },
-];
-
-const skillTabs = [
+const heroTaglines = [
   {
-    id: "frontend",
-    label: "Frontend",
-    kicker: "Interface systems",
-    summary: "Building fast, animated, responsive product surfaces with clean component thinking.",
-    icon: FiCode,
-    skills: [
-      { name: "React", level: 88, icon: SiReact, note: "Component architecture" },
-      { name: "Next.js", level: 86, icon: SiNextdotjs, note: "SEO and app routing" },
-      { name: "Tailwind CSS", level: 80, icon: SiTailwindcss, note: "Design-system styling" },
-      { name: "JavaScript", level: 85, icon: SiJavascript, note: "Interactive logic" },
-      { name: "TypeScript", level: 78, icon: SiTypescript, note: "Safer product code" },
-    ],
+    label: "Product systems",
+    line: "Designing trust-heavy digital products for Web3, identity and verification.",
   },
   {
-    id: "backend",
-    label: "Backend",
-    kicker: "Data and services",
-    summary: "Designing reliable server logic, APIs, data models, and blockchain-oriented workflows.",
-    icon: SiNodedotjs,
-    skills: [
-      { name: "Node.js", level: 70, icon: SiNodedotjs, note: "API foundations" },
-      { name: "MongoDB", level: 74, icon: SiMongodb, note: "Document data flows" },
-      { name: "Blockchain", level: 82, icon: FiGlobe, note: "Tokenization and trust" },
-      { name: "Cybersecurity", level: 78, icon: FiActivity, note: "Secure thinking" },
-    ],
+    label: "Creative engineering",
+    line: "Building responsive interfaces with motion, hierarchy and production-minded code.",
   },
   {
-    id: "design",
-    label: "Design",
-    kicker: "Product craft",
-    summary: "Shaping interfaces with hierarchy, motion, story, and strong visual taste.",
-    icon: SiFigma,
-    skills: [
-      { name: "Figma", level: 95, icon: SiFigma, note: "High-fidelity design" },
-      { name: "UI/UX Design", level: 90, icon: FiArrowUpRight, note: "User journey clarity" },
-      { name: "Framer Motion", level: 82, icon: SiFramer, note: "Cinematic transitions" },
-      { name: "Creative Direction", level: 84, icon: FiHeart, note: "Editorial polish" },
-    ],
+    label: "Systems thinking",
+    line: "Turning complex workflows into clear, cinematic product experiences.",
   },
   {
-    id: "soft",
-    label: "Soft Skills",
-    kicker: "Human layer",
-    summary: "Bringing calm communication, curiosity, collaboration, and ownership into product work.",
-    icon: FiUsers,
-    skills: [
-      { name: "Communication", level: 92, icon: FiMessageCircle, note: "Clear team alignment" },
-      { name: "Public Speaking", level: 86, icon: FiMessageCircle, note: "Confident presentation" },
-      { name: "Project Management", level: 88, icon: FiActivity, note: "Planning and delivery" },
-      { name: "Networking", level: 84, icon: FiGlobe, note: "Relationship building" },
-      { name: "Collaboration", level: 88, icon: FiUsers, note: "Agile project rhythm" },
-      { name: "Agile / Scrum", level: 86, icon: FiUsers, note: "Sprint-based teamwork" },
-      { name: "Problem Solving", level: 86, icon: FiActivity, note: "Structured decisions" },
-      { name: "Adaptability", level: 84, icon: FiGlobe, note: "Learning across contexts" },
-    ],
+    label: "Bhutan based",
+    line: "Creating from a local context with global product taste.",
   },
 ];
 
-const interests = [
-  { title: "Basketball", detail: "Fast decisions, movement, rhythm, and court awareness.", icon: FiActivity },
-  { title: "Football", detail: "Team energy, strategy, pressure, and shared momentum.", icon: FiUsers },
-  { title: "Perfume Collection", detail: "A personal archive of detail, memory, taste, and identity.", icon: FiHeart },
-  { title: "Video Games", detail: "Strategy, reflex, systems thinking, and playful problem-solving under pressure.", icon: FiCpu },
-  { title: "Traveling", detail: "New places, culture, perspective, and stronger product empathy.", icon: FiGlobe },
-  { title: "Communicating", detail: "Reading people well and making ideas easier to understand.", icon: FiMessageCircle },
-];
+const fallbackImage = "/dist/images/1.webp";
+const whatsappUrl = "https://wa.me/97517495130";
 
-const projects = [
+const projects: Project[] = [
   {
     title: "RSEB Bond Tokenization",
-    category: "Full Stack",
+    category: "Blockchain Finance",
+    role: "Product + Web3 Developer",
+    year: "2026",
     image: "/images/optimized/RSEB-1200.webp",
-    description:
-      "A blockchain platform for tokenizing bonds and exploring secure digital asset trading workflows.",
-    stack: ["Blockchain", "Tokenization"],
-    code: "https://github.com/Mericle123/rseb_bond_tokenization",
-    size: "large",
+    summary:
+      "A digital bond market concept that explores tokenized ownership, transparent trading and clearer verification for regulated financial assets.",
+    stack: ["Blockchain", "Tokenization", "Finance UI", "React"],
+    result: "Clarified digital ownership and investor-facing trust signals.",
+    href: "https://github.com/Mericle123/rseb_bond_tokenization",
   },
   {
     title: "Certifi",
-    category: "Full Stack",
+    category: "Credential Verification",
+    role: "Full Stack Developer",
+    year: "2025",
     image: "/images/optimized/certifi-1100.webp",
-    description:
-      "A blockchain certificate system that stores verified credentials with IPFS so academic records stay secure, portable, and easy to validate.",
-    stack: ["Blockchain", "IPFS", "React", "Node"],
-    code: "https://gitlab.com/prj_group1/prj_group_certifi.git",
-    size: "wide",
+    summary:
+      "A certificate verification platform using blockchain and IPFS so academic credentials can be issued, stored and validated securely.",
+    stack: ["IPFS", "React", "Node", "Verification"],
+    result: "Made academic records tamper-aware and easier to validate.",
+    href: "https://gitlab.com/prj_group1/prj_group_certifi.git",
   },
   {
     title: "Keychain",
-    category: "Creative Development",
+    category: "NFT Real Estate",
+    role: "DApp Designer",
+    year: "2025",
     image: "/images/optimized/realestate-1100.webp",
-    description:
-      "A real-estate management experience where properties become blockchain-backed NFTs with clearer ownership flows.",
-    stack: ["NFT", "Solidity", "React", "UX"],
-    code: "https://gitlab.com/dapp640315/real-estate.git",
-    size: "wide",
+    summary:
+      "A real-estate management concept where property listings and ownership workflows are supported by NFT-backed records.",
+    stack: ["NFT", "Solidity", "UX", "React"],
+    result: "Connected ownership visibility with practical property management.",
+    href: "https://gitlab.com/dapp640315/real-estate.git",
   },
   {
     title: "Taxico",
-    category: "Web Apps",
+    category: "Service Platform",
+    role: "Agile Developer",
+    year: "2024",
     image: "/images/optimized/taxico-1100.webp",
-    description:
-      "A ride service platform for booking, driver profiles, experience tracking, and earnings visibility.",
-    stack: ["Agile", "Node", "React", "SQL"],
-    code: "https://gitlab.com/csf202_agile-software-engineering-practice/taxico",
-    size: "tall",
+    summary:
+      "A ride-service platform for booking, driver profiles, trip visibility, status tracking and service operations.",
+    stack: ["React", "Node", "SQL", "Agile"],
+    result: "Built a practical service workflow for riders, drivers and operators.",
+    href: "https://gitlab.com/csf202_agile-software-engineering-practice/taxico",
   },
   {
     title: "Applymate",
-    category: "UI Design",
+    category: "Admissions UX",
+    role: "UI/UX Designer",
+    year: "2024",
     image: "/images/optimized/applymate-1100.webp",
-    description:
-      "A student admissions interface designed to simplify submissions, tracking, and applicant management.",
-    stack: ["UI/UX", "React", "Figma"],
-    code: "https://github.com/Pemacoder/ApplyMate",
-    size: "medium",
+    summary:
+      "A student admissions interface that simplifies submissions, applicant tracking and review management.",
+    stack: ["Figma", "React", "UI/UX", "Research"],
+    result: "Reduced confusion inside a stressful academic application process.",
+    href: "https://github.com/Pemacoder/ApplyMate",
   },
   {
     title: "Areo Bhutan",
-    category: "Web Apps",
+    category: "Travel Product",
+    role: "Frontend Developer",
+    year: "2024",
     image: "/images/optimized/areo-1100.webp",
-    description:
-      "A travel booking platform for flights, hotels, and curated services around Bhutan.",
-    stack: ["Travel", "Frontend", "Booking"],
-    size: "wide",
+    summary:
+      "A travel booking experience for flights, hotels and curated Bhutan services with clean browsing and decision confidence.",
+    stack: ["Frontend", "Travel UX", "Booking", "Responsive"],
+    result: "Made travel planning more visual, guided and direct.",
   },
 ];
 
-const timeline = [
+const designSkills = [
+  "UI/UX Design",
+  "Interaction Design",
+  "Design Systems",
+  "Wireframing",
+  "Prototyping",
+  "User Research",
+  "Information Architecture",
+  "Motion Design",
+];
+
+const devSkills = [
+  "Frontend Development",
+  "React",
+  "Next.js",
+  "TypeScript",
+  "Tailwind CSS",
+  "Animation Libraries",
+  "API Integration",
+  "Responsive Systems",
+];
+
+const tools = ["Figma", "Framer", "Adobe Suite", "Notion", "GitHub", "VS Code"];
+
+const softSkills = [
+  "Leadership",
+  "Communication",
+  "Creative Thinking",
+  "Collaboration",
+  "Problem Solving",
+  "Adaptability",
+  "Strategic Thinking",
+  "Attention to Detail",
+  "Team Management",
+  "Client Communication",
+];
+
+const education = [
   {
-    year: "2010 - 2016",
-    title: "Primary School",
-    place: "Habesa, Wangdue, Bhutan",
-    body: "Built the early curiosity and discipline that later turned into product thinking.",
-  },
-  {
-    year: "2017 - 2022",
-    title: "Higher School",
-    place: "Ugyen Academy, Punakha, Bhutan",
-    body: "Strengthened communication, design taste, and confidence with technology.",
-  },
-  {
-    year: "2023 - 2026",
+    years: "2023 - 2026",
     title: "BSc Computer Science",
-    place: "GCIT, Gelpozhing College of Information Technology",
-    body: "Specializing in blockchain and cybersecurity while building web products with Agile teams.",
+    place: "Gelpozhing College of Information Technology",
+    details:
+      "Focused on blockchain, cybersecurity, software engineering, product design and full-stack web development.",
+    coursework: ["Blockchain Systems", "Cybersecurity", "Agile Practice", "Web Engineering", "Database Systems"],
   },
   {
-    year: "Since 2023",
-    title: "Client & Product Work",
-    place: "Remote collaborations",
-    body: "Working across web apps, travel products, tokenization concepts, and refined interface design.",
+    years: "2017 - 2022",
+    title: "Higher School",
+    place: "Ugyen Academy, Punakha",
+    details:
+      "Built communication confidence, team discipline and early creative interest in technology and design.",
+    coursework: ["Presentation", "Team Projects", "Digital Literacy"],
+  },
+  {
+    years: "2010 - 2016",
+    title: "Primary School",
+    place: "Habesa, Wangdue",
+    details:
+      "Developed the curiosity, patience and self-learning mindset that later shaped my technical work.",
+    coursework: ["Foundation Learning", "Communication", "Discipline"],
   },
 ];
 
-const testimonials = [
+const experience = [
   {
-    quote:
-      "Ngawang brings the rare mix of disciplined engineering and visual sensitivity. His prototypes feel alive early.",
-    name: "Creative Lead",
-    role: "Product Collaboration",
+    years: "Since 2023",
+    role: "Product Builder",
+    company: "Hackathons, coursework and independent builds",
+    body:
+      "Designed and developed blockchain concepts, product interfaces, dashboards and service workflows across finance, credentials, real estate, admissions, transport and travel.",
+    wins: ["Built multi-project portfolio", "Worked with agile teams", "Presented technical product ideas"],
   },
   {
-    quote:
-      "He thinks beyond screens: security, flow, and the user journey all show up in the work.",
-    name: "Project Mentor",
-    role: "GCIT",
+    years: "2024 - 2026",
+    role: "Frontend + UI/UX Developer",
+    company: "Academic and collaborative projects",
+    body:
+      "Created responsive product screens, connected frontend workflows, shaped visual systems and improved interface clarity through iteration.",
+    wins: ["React interfaces", "Figma prototypes", "Responsive systems"],
   },
   {
-    quote:
-      "The delivery style is calm, curious, and polished. Every iteration makes the product clearer.",
-    name: "Client Partner",
-    role: "Web Experience",
+    years: "Ongoing",
+    role: "Blockchain and Security Learner",
+    company: "Personal specialization",
+    body:
+      "Exploring digital identity systems, verification workflows, tokenization concepts, trust-aware architectures and security-first product thinking through real project concepts.",
+    wins: [
+      "Digital identity systems",
+      "Verification workflows",
+      "Tokenization concepts",
+      "Trust-aware architectures",
+      "Tamper-resistant records",
+      "Audit-aware product systems",
+      "Authentication logic",
+      "Web3 infrastructure exploration",
+    ],
   },
 ];
 
-const socialLinks = [
-  { label: "Instagram", href: "https://www.instagram.com/_n.gyeltshen/", icon: FiInstagram },
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/ngawang-gyeltshen-46452025b/", icon: FiLinkedin },
-  { label: "GitLab", href: "https://gitlab.com/csf202_agile-software-engineering-practice/taxico/-/tree/sprint-3-branch?ref_type=heads", icon: FiGitlab },
+const socials = [
+  { label: "Instagram", short: "ig", href: "https://www.instagram.com/_n.gyeltshen/", icon: FiInstagram },
+  { label: "LinkedIn", short: "in", href: "https://www.linkedin.com/in/ngawang-gyeltshen-46452025b/", icon: FiLinkedin },
+  { label: "GitHub", short: "gh", href: "https://github.com/Mericle123", icon: FiGithub },
 ];
 
-function MagneticButton({
-  children,
-  href,
-  className = "",
-}: {
-  children: React.ReactNode;
-  href: string;
-  className?: string;
-}) {
-  return (
-    <a
-      href={href}
-      className={`magnetic inline-flex items-center justify-center gap-3 rounded-full border border-white/10 px-6 py-4 text-sm uppercase tracking-[0.22em] text-[#f5f1e8] transition-[border-color,background-color,color,box-shadow] duration-300 hover:border-[#d6c3a5]/70 hover:bg-[#d6c3a5] hover:text-[#0a0a0a] hover:shadow-[0_18px_60px_rgba(214,195,165,0.2)] ${className}`}
-    >
-      {children}
-    </a>
-  );
-}
+const portraits = Array.from({ length: 12 }, (_, index) => `/dist/images/${index + 1}.webp`);
+const galleryItems = portraits.map((image, index) => ({
+  image,
+  number: String(index + 1).padStart(2, "0"),
+  title: [
+    "Focused Systems",
+    "Mirror Study",
+    "Framed Reflection",
+    "Transit Portrait",
+    "Low Light",
+    "Soft Light",
+    "Garden Frame",
+    "Mountain Signal",
+    "Night City",
+    "Fog Study",
+    "Quiet Moment",
+    "Open Road",
+  ][index],
+}));
 
-function Reveal({
-  children,
-  className = "",
-  delay = 0,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  delay?: number;
-}) {
+function Reveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 48, filter: "blur(14px)" }}
+      initial={{ opacity: 0, y: 34, filter: "blur(12px)" }}
       whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       viewport={{ once: true, margin: "-90px" }}
-      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay }}
+      transition={{ duration: 0.72, ease: [0.22, 1, 0.36, 1], delay }}
       className={className}
     >
       {children}
@@ -306,158 +265,176 @@ function Reveal({
   );
 }
 
-function CustomCursor() {
-  const ring = useRef<HTMLDivElement>(null);
-  const dot = useRef<HTMLDivElement>(null);
-  const [active, setActive] = useState(false);
+function Marquee({ items, reverse = false }: { items: string[]; reverse?: boolean }) {
+  const repeated = [...items, ...items, ...items];
+  return (
+    <div className={`marquee ${reverse ? "marquee-reverse" : ""}`}>
+      <div className="marquee-track">
+        {repeated.map((item, index) => (
+          <span key={`${item}-${index}`}>{item}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function imageFallback(event: React.SyntheticEvent<HTMLImageElement>) {
+  const img = event.currentTarget;
+  if (img.src.endsWith(fallbackImage)) return;
+  img.src = fallbackImage;
+}
+
+function CursorLight() {
+  const lightRef = useRef<HTMLDivElement>(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const labelRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
+    let targetX = window.innerWidth / 2;
+    let targetY = window.innerHeight / 2;
+    let currentX = targetX;
+    let currentY = targetY;
     let frame = 0;
-    let isHoveringInteractive = false;
-    const position = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-    const ringPosition = { x: position.x, y: position.y };
 
-    const render = () => {
-      ringPosition.x += (position.x - ringPosition.x) * 0.62;
-      ringPosition.y += (position.y - ringPosition.y) * 0.62;
-
-      if (ring.current) {
-        ring.current.style.transform = `translate3d(${ringPosition.x - 18}px, ${ringPosition.y - 18}px, 0)`;
-      }
-      if (dot.current) {
-        dot.current.style.transform = `translate3d(${position.x - 3}px, ${position.y - 3}px, 0)`;
-      }
-
-      frame = requestAnimationFrame(render);
+    const interactiveSelector = "a, button, .about-card, .process-step, .soft-card, .experience-panel, .orbital-thumb, .project-index-row";
+    const textSelector = "p, h1, h2, h3, h4, input, textarea, [contenteditable='true']";
+    const disabledSelector = "button:disabled, a[aria-disabled='true'], [data-disabled='true']";
+    const precisionSelector = ".orbital-thumb, .project-preview, .gallery-orbital-section";
+    const labels: Record<string, string> = {
+      A: "Open",
+      BUTTON: "View",
     };
 
-    const move = (event: MouseEvent) => {
-      position.x = event.clientX;
-      position.y = event.clientY;
-      const target = document.elementFromPoint(event.clientX, event.clientY) as HTMLElement | null;
-      const nextHovering = Boolean(target?.closest("a, button, input, textarea, .magnetic"));
-
-      if (nextHovering !== isHoveringInteractive) {
-        isHoveringInteractive = nextHovering;
-        setActive(nextHovering);
+    const move = (event: PointerEvent) => {
+      targetX = event.clientX;
+      targetY = event.clientY;
+      if (lightRef.current) {
+        lightRef.current.style.setProperty("--x", `${event.clientX}px`);
+        lightRef.current.style.setProperty("--y", `${event.clientY}px`);
       }
     };
 
-    frame = requestAnimationFrame(render);
-    window.addEventListener("mousemove", move);
+    const tick = () => {
+      currentX += (targetX - currentX) * 0.18;
+      currentY += (targetY - currentY) * 0.18;
+      if (cursorRef.current) {
+        cursorRef.current.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) translate(-50%, -50%)`;
+      }
+      frame = requestAnimationFrame(tick);
+    };
+
+    const over = (event: PointerEvent) => {
+      const target = event.target as Element | null;
+      const hit = target?.closest(interactiveSelector);
+      const textHit = target?.closest(textSelector);
+      const disabledHit = target?.closest(disabledSelector);
+      const precisionHit = target?.closest(precisionSelector);
+      cursorRef.current?.classList.toggle("is-hovering", Boolean(hit));
+      cursorRef.current?.classList.toggle("is-gallery", Boolean(target?.closest(".orbital-thumb, .orbital-feature-card")));
+      cursorRef.current?.classList.toggle("is-text", Boolean(textHit) && !hit);
+      cursorRef.current?.classList.toggle("is-disabled", Boolean(disabledHit));
+      cursorRef.current?.classList.toggle("is-precision", Boolean(precisionHit) && !hit);
+      if (labelRef.current) labelRef.current.textContent = hit ? labels[hit.tagName] ?? "View" : "";
+    };
+
+    const leave = () => {
+      cursorRef.current?.classList.remove("is-hovering");
+      cursorRef.current?.classList.remove("is-gallery");
+      cursorRef.current?.classList.remove("is-text");
+      cursorRef.current?.classList.remove("is-disabled");
+      cursorRef.current?.classList.remove("is-precision");
+      if (labelRef.current) labelRef.current.textContent = "";
+    };
+
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerover", over);
+    window.addEventListener("pointerout", leave);
+    frame = requestAnimationFrame(tick);
     return () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerover", over);
+      window.removeEventListener("pointerout", leave);
       cancelAnimationFrame(frame);
-      window.removeEventListener("mousemove", move);
     };
   }, []);
 
   return (
     <>
-      <div ref={ring} className={`custom-cursor-ring ${active ? "is-active" : ""}`} />
-      <div ref={dot} className={`custom-cursor-dot ${active ? "is-active" : ""}`} />
+      <div ref={lightRef} className="cursor-light" />
+      <div ref={cursorRef} className="custom-cursor">
+        <i className="cursor-shape" />
+        <i className="cursor-spinner" />
+        <i className="cursor-crosshair" />
+        <span ref={labelRef} />
+      </div>
     </>
   );
 }
 
-function Navbar({
-  theme,
-  onToggleTheme,
-}: {
-  theme: "dark" | "light";
-  onToggleTheme: () => void;
-}) {
+function Navbar() {
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [active, setActive] = useState("Work");
 
   useEffect(() => {
     let last = 0;
     const onScroll = () => {
-      const current = window.scrollY;
-      setHidden(current > last && current > 160);
-      last = current;
+      const y = window.scrollY;
+      setHidden(y > last && y > 220);
+      last = y;
+
+      const sections = navItems.map((item) => document.getElementById(item.toLowerCase()));
+      let current: HTMLElement | null = null;
+      for (const section of sections) {
+        if (section && section.offsetTop - 160 <= y) current = section;
+      }
+      if (current) setActive(current.id[0].toUpperCase() + current.id.slice(1));
     };
     window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
-    <motion.header
-      animate={{ y: hidden ? -110 : 0 }}
-      transition={{ duration: 0.35 }}
-      className="fixed left-0 right-0 top-0 z-50 px-4 py-5 md:px-8"
-    >
-      <nav className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/[0.08] bg-[#0a0a0a]/45 px-4 py-3 shadow-2xl shadow-black/30 backdrop-blur-2xl md:px-6">
-        <a href="#home" className="font-serif text-xl tracking-wide text-[#f5f1e8]">
-          NG
+    <motion.header animate={{ y: hidden ? -120 : 0 }} transition={{ duration: 0.35 }} className="fixed inset-x-0 top-0 z-50 px-4 py-5 md:px-8">
+      <nav className="mx-auto flex max-w-[1500px] items-center justify-between rounded-full border border-white/10 bg-black/35 px-4 py-3 shadow-2xl shadow-black/30 backdrop-blur-2xl md:px-6">
+        <a href="#home" className="text-sm font-semibold text-white">
+          Ngawang<span className="text-[#ff4d2a]">.</span>
         </a>
-        <div className="hidden items-center gap-8 md:flex">
+        <div className="hidden items-center gap-2 lg:flex">
           {navItems.map((item) => (
-            <a
-              key={item}
-              href={`#${item.toLowerCase()}`}
-              className="nav-link text-xs uppercase tracking-[0.24em] text-[#b8b1a6] transition hover:text-[#f5f1e8]"
-            >
+            <a key={item} href={`#${item.toLowerCase()}`} className={`nav-pill ${active === item ? "is-active" : ""}`}>
               {item}
             </a>
           ))}
         </div>
-        <a
-          href="/docs/ngawang-gyeltshen-cv.pdf"
-          className="hidden rounded-full border border-white/10 px-4 py-2 text-xs uppercase tracking-[0.2em] text-[#d6c3a5] transition hover:bg-[#d6c3a5] hover:text-black md:inline-flex"
-        >
-          CV
-        </a>
-        <button
-          aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-          onClick={onToggleTheme}
-          className="hidden h-10 w-10 items-center justify-center rounded-full border border-white/10 text-[#d6c3a5] transition hover:bg-[#d6c3a5] hover:text-black md:inline-flex"
-        >
-          {theme === "dark" ? <FiSun /> : <FiMoon />}
-        </button>
-        <button
-          aria-label="Open menu"
-          onClick={() => setOpen(true)}
-          className="rounded-full border border-white/10 p-3 text-[#f5f1e8] md:hidden"
-        >
+        <div className="hidden items-center gap-4 md:flex">
+          <a href="/docs/ngawang-gyeltshen-cv.pdf" className="text-xs font-semibold uppercase tracking-[0.22em] text-white/58 transition hover:text-white">
+            CV
+          </a>
+          <a href="#contact" className="rounded-full bg-white px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-black transition hover:bg-[#ff4d2a] hover:text-white">
+            Let&apos;s talk
+          </a>
+        </div>
+        <button onClick={() => setOpen(true)} aria-label="Open menu" className="grid size-11 place-items-center rounded-full border border-white/10 text-white lg:hidden">
           <FiMenu />
         </button>
       </nav>
       <AnimatePresence>
         {open && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-[#0a0a0a]/95 p-5 backdrop-blur-xl md:hidden"
-          >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 bg-[#060606] p-5 text-white lg:hidden">
             <div className="flex items-center justify-between">
-              <span className="font-serif text-2xl text-[#f5f1e8]">Ngawang</span>
-              <button
-                aria-label="Close menu"
-                onClick={() => setOpen(false)}
-                className="rounded-full border border-white/10 p-3 text-[#f5f1e8]"
-              >
+              <span className="font-semibold">Ngawang.</span>
+              <button onClick={() => setOpen(false)} aria-label="Close menu" className="grid size-12 place-items-center rounded-full border border-white/15">
                 <FiX />
               </button>
             </div>
-            <div className="mt-16 grid gap-6">
+            <div className="mt-16 grid gap-4">
               {navItems.map((item) => (
-                <a
-                  key={item}
-                  href={`#${item.toLowerCase()}`}
-                  onClick={() => setOpen(false)}
-                  className="font-serif text-5xl text-[#f5f1e8]"
-                >
+                <a key={item} onClick={() => setOpen(false)} href={`#${item.toLowerCase()}`} className="text-6xl font-black uppercase tracking-[-0.08em]">
                   {item}
                 </a>
               ))}
-              <button
-                onClick={onToggleTheme}
-                aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-                className="mt-6 inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/10 text-[#d6c3a5]"
-              >
-                {theme === "dark" ? <FiSun /> : <FiMoon />}
-              </button>
             </div>
           </motion.div>
         )}
@@ -467,631 +444,798 @@ function Navbar({
 }
 
 function Hero() {
-  const [role, setRole] = useState(0);
-  const heroRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], [0, 180]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.92]);
+  const [tagline, setTagline] = useState(0);
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], [0, 120]);
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
+  const drift = useTransform(scrollYProgress, [0, 1], [0, -90]);
 
   useEffect(() => {
-    const timer = window.setInterval(() => setRole((value) => (value + 1) % roles.length), 2100);
-    return () => window.clearInterval(timer);
+    const textTimer = window.setInterval(() => setTagline((value) => (value + 1) % heroTaglines.length), 2600);
+    return () => window.clearInterval(textTimer);
   }, []);
 
   return (
-    <section id="home" ref={heroRef} className="relative min-h-screen overflow-hidden px-5 pb-24 pt-32 md:px-8 lg:pt-40">
-      <div className="cinema-glow left-[8%] top-[12%] bg-[#d6c3a5]/20" />
-      <div className="cinema-glow right-[8%] top-[46%] bg-[#3f6f5f]/20" />
-      <motion.div style={{ y, scale }} className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-        <div className="relative z-10">
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="mb-7 text-xs uppercase tracking-[0.34em] text-[#d6c3a5]"
-          >
-            Portfolio
-          </motion.p>
-          <motion.h1
-            initial={{ opacity: 0, y: 70, filter: "blur(18px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-5xl font-serif text-[clamp(4.6rem,13vw,12rem)] leading-[0.78] tracking-normal text-[#f5f1e8]"
-          >
-            Ngawang
-            <span className="block text-[#d6c3a5]">Gyeltshen</span>
-          </motion.h1>
-          <div className="mt-8 flex min-h-12 flex-wrap items-center gap-4 text-lg text-[#b8b1a6] md:text-2xl">
-            <span>Crafting immersive digital experiences as a</span>
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={roles[role]}
-                initial={{ opacity: 0, y: 18, filter: "blur(10px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, y: -18, filter: "blur(10px)" }}
-                transition={{ duration: 0.45 }}
-                className="hero-role font-serif italic text-[#f5f1e8]"
-              >
-                {roles[role]}
-              </motion.span>
-            </AnimatePresence>
-          </div>
-          <p className="mt-8 max-w-2xl text-lg leading-8 text-[#b8b1a6]">
-            Experienced in blockchain, web development, and cybersecurity, I build secure digital products with code, motion, and modern design.
-          </p>
-          <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-            <MagneticButton href="#projects">
-              View work <FiArrowUpRight />
-            </MagneticButton>
-            <MagneticButton href="#contact" className="bg-white/[0.03]">
-              Contact me <FiMail />
-            </MagneticButton>
-          </div>
-        </div>
-        <div className="relative min-h-[560px] lg:min-h-[690px]">
-          <motion.div
-            initial={{ opacity: 0, rotate: -4, y: 60 }}
-            animate={{ opacity: 1, rotate: -2, y: 0 }}
-            transition={{ duration: 1, delay: 0.2 }}
-            className="floating-card absolute left-1/2 top-8 h-[560px] w-[84%] -translate-x-1/2 overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#111111]"
-          >
-            <Image src="/images/optimized/image-900.webp" alt="Ngawang Gyeltshen portrait" fill priority className="object-cover" />
+    <section id="home" ref={ref} className="hero-section relative min-h-screen overflow-hidden px-4 pb-10 pt-28 md:px-8 md:pt-32">
+      <motion.div style={{ y: drift, scale }} className="hero-cinematic-field" />
+      <motion.div style={{ y }} className="hero-light-sweep" />
+      <motion.div style={{ y: drift }} className="hero-grid-field" />
+      <motion.div style={{ y, scale }} className="hero-orb hero-orb-one" />
+      <motion.div style={{ y: drift }} className="hero-orb hero-orb-two" />
+      <div className="grain" />
+
+      <div className="relative z-10 mx-auto grid min-h-[calc(100vh-8rem)] max-w-[1500px] gap-10 lg:grid-cols-[1fr_0.72fr] lg:items-end">
+        <div className="self-end">
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="mb-7 flex flex-wrap items-center gap-4">
+            <span className="status-dot" />
+            <span className="text-xs font-bold uppercase tracking-[0.28em] text-white/58">Available for projects</span>
           </motion.div>
+          <motion.p initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.75, delay: 0.08 }} className="mb-5 text-lg font-semibold text-white/65">
+            Ngawang Gyeltshen / Product Designer + Web Systems Developer
+          </motion.p>
+          <motion.h1 initial={{ opacity: 0, y: 60, filter: "blur(16px)" }} animate={{ opacity: 1, y: 0, filter: "blur(0px)" }} transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.12 }} className="max-w-6xl text-[clamp(3.4rem,8.4vw,9.4rem)] font-black leading-[0.86] tracking-[-0.09em] text-white">
+            ELITE DIGITAL PRODUCT SYSTEMS.
+          </motion.h1>
+          <div className="mt-8 grid max-w-4xl gap-5 md:grid-cols-[1fr_auto] md:items-end">
+            <AnimatePresence mode="wait">
+              <motion.p key={tagline} initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -18 }} transition={{ duration: 0.45 }} className="max-w-2xl text-lg font-medium leading-8 text-white/64 md:text-xl">
+                {heroTaglines[tagline].line}
+              </motion.p>
+            </AnimatePresence>
+            <div className="flex flex-wrap gap-3">
+              <a href="#work" className="hero-cta primary">
+                View work <FiArrowDown />
+              </a>
+              <a href="#contact" className="hero-cta">
+                Contact <FiArrowUpRight />
+              </a>
+            </div>
+          </div>
         </div>
-      </motion.div>
-      <a href="#about" className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 text-[#b8b1a6]">
-        <span className="text-xs uppercase tracking-[0.28em]">Scroll</span>
-        <FiArrowDown className="animate-bounce" />
-      </a>
+
+        <motion.aside initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.85, delay: 0.25 }} className="hero-side-panel">
+          <div className="border-b border-white/12 pb-7">
+            <p className="text-xs font-bold uppercase tracking-[0.26em] text-[#ff4d2a]">{heroTaglines[tagline].label}</p>
+            <p className="mt-4 text-2xl font-bold leading-tight text-white">Designing interfaces for finance, identity, verification and modern Web3 systems.</p>
+          </div>
+          <div className="grid gap-3 border-b border-white/12 py-7">
+            {["Website Design", "Product Design", "Branding & Strategy", "Frontend Systems"].map((item) => (
+              <span key={item} className="text-lg font-semibold text-white/42">{item}</span>
+            ))}
+          </div>
+          <div className="pt-7">
+            <a href="#contact" className="group flex items-center justify-between text-lg font-bold text-white underline underline-offset-4">
+              How can I help? <FiArrowUpRight className="transition group-hover:translate-x-1 group-hover:-translate-y-1" />
+            </a>
+          </div>
+        </motion.aside>
+      </div>
     </section>
   );
 }
 
-function SectionHeader({ eyebrow, title }: { eyebrow: string; title: string }) {
+function Work() {
+  const [active, setActive] = useState(projects[0]);
+  const activeIndex = projects.findIndex((project) => project.title === active.title);
+
   return (
-    <Reveal className="mx-auto mb-14 max-w-4xl text-center">
-      <p className="mb-5 text-xs uppercase tracking-[0.34em] text-[#d6c3a5]">{eyebrow}</p>
-      <h2 className="font-serif text-[clamp(3rem,7vw,7rem)] leading-[0.92] text-[#f5f1e8]">{title}</h2>
-    </Reveal>
+    <section id="work" className="section-shell px-4 py-24 md:px-8 lg:py-36">
+      <div className="mx-auto max-w-[1500px]">
+        <Reveal className="mb-12 grid gap-7 lg:grid-cols-[0.78fr_1.22fr]">
+          <div>
+            <p className="eyebrow">Featured Projects</p>
+            <h2 className="section-title">Interactive project index with live previews.</h2>
+          </div>
+          <p className="self-end text-lg font-medium leading-8 text-white/56">
+            Hover or keyboard-focus a project to update the preview instantly. Each preview image is loaded from the project assets and transitions with cinematic scale, blur and depth.
+          </p>
+        </Reveal>
+
+        <div className="grid gap-8 lg:grid-cols-[0.98fr_1.02fr]">
+          <Reveal>
+            <div className="project-index">
+              {projects.map((project, index) => (
+                <button
+                  key={project.title}
+                  type="button"
+                  onMouseEnter={() => setActive(project)}
+                  onFocus={() => setActive(project)}
+                  className={`project-index-row ${active.title === project.title ? "is-active" : ""}`}
+                >
+                  <span className="project-number">{project.year}</span>
+                  <span className="min-w-0">
+                    <span className="block text-[clamp(2rem,4vw,4.8rem)] font-black leading-[0.9] tracking-[-0.075em] text-white">{project.title}</span>
+                    <span className="mt-3 block max-w-2xl text-sm leading-6 text-white/46 md:text-base">{project.summary}</span>
+                    <span className="mt-4 flex flex-wrap gap-2">
+                      {project.stack.map((item) => (
+                        <span key={item} className="tech-chip">{item}</span>
+                      ))}
+                    </span>
+                  </span>
+                  <span className="project-meta">
+                    <span>{project.category}</span>
+                    <span>{project.role}</span>
+                    {project.href && (
+                      <a href={project.href} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-white underline underline-offset-4">
+                        Source {project.href.includes("gitlab") ? <FiGitlab /> : <FiGithub />}
+                      </a>
+                    )}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.08} className="order-first lg:order-none">
+            <div className="project-preview">
+              <div className="absolute left-6 top-6 z-10 rounded-full border border-white/12 bg-black/45 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-white/70 backdrop-blur-xl">
+                {String(activeIndex + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
+              </div>
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={active.image}
+                  src={active.image}
+                  alt={`${active.title} preview`}
+                  loading="eager"
+                  decoding="async"
+                  onError={imageFallback}
+                  initial={{ opacity: 0, scale: 1.08, filter: "blur(18px)" }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, scale: 0.98, filter: "blur(18px)" }}
+                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  className="h-full w-full object-cover"
+                />
+              </AnimatePresence>
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/58 to-transparent p-6 md:p-8">
+                <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#ff4d2a]">Result</p>
+                <p className="mt-3 max-w-2xl text-xl font-bold leading-7 text-white">{active.result}</p>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </div>
+    </section>
   );
 }
 
 function About() {
+  const ref = useRef<HTMLElement>(null);
+  const [activeStep, setActiveStep] = useState("Research");
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const depthA = useTransform(scrollYProgress, [0, 1], [-54, 54]);
+  const depthB = useTransform(scrollYProgress, [0, 1], [42, -42]);
+  const paragraphs = [
+    "I’m Ngawang Gyeltshen, a Computer Science graduate from GCIT focused on product design, web systems, and modern digital experiences. I care about digital experiences that make complex systems feel understandable and trustworthy.",
+    "My design mindset is simple: strong hierarchy first, motion with purpose, and interfaces that help people make decisions. I enjoy building products where identity, verification, ownership and transparency matter.",
+    "My career direction is to become a high-level product designer and systems creator who can bridge design, engineering and emerging digital trust infrastructure.",
+  ];
+  const processSteps = ["Research", "Prototype", "Build", "Refine", "Ship", "Learn"];
+
+  const handleMove = (event: MouseEvent<HTMLElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty("--mx", `${event.clientX - rect.left}px`);
+    event.currentTarget.style.setProperty("--my", `${event.clientY - rect.top}px`);
+  };
+
   return (
-    <section id="about" className="relative px-5 py-24 md:px-8 lg:py-36">
-      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
-        <Reveal className="relative">
-          <div className="aspect-[4/5] overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#111111]">
-            <Image src="/images/optimized/ng1-760.webp" alt="Ngawang Gyeltshen" width={760} height={1012} className="h-full w-full object-cover" />
-          </div>
-          <div className="absolute -right-4 top-10 grid gap-3 md:-right-8">
-            {stats.map((stat) => (
-              <div key={stat.label} className="rounded-[24px] border border-white/[0.08] bg-[#0a0a0a]/70 p-5 shadow-2xl backdrop-blur-xl">
-                <p className="font-serif text-3xl text-[#f5f1e8]">{stat.value}</p>
-                <p className="mt-1 max-w-28 text-xs uppercase tracking-[0.16em] text-[#b8b1a6]">{stat.label}</p>
-              </div>
-            ))}
+    <section id="about" ref={ref} className="about-section section-shell overflow-hidden px-4 py-24 md:px-8 lg:py-36">
+      <motion.div style={{ y: depthA }} className="about-depth about-depth-one" />
+      <motion.div style={{ y: depthB }} className="about-depth about-depth-two" />
+      <div className="relative z-10 mx-auto grid max-w-[1500px] gap-12 lg:grid-cols-[0.84fr_1.16fr]">
+        <Reveal className="about-story-sticky">
+          <p className="eyebrow">About</p>
+          <h2 className="section-title">A systems thinker with a designer’s eye and a developer’s discipline.</h2>
+          <div className="about-signal">
+            <span />
+            <p>Product thinking / interface systems / digital trust</p>
           </div>
         </Reveal>
-        <div>
-          <Reveal>
-            <p className="mb-5 text-xs uppercase tracking-[0.34em] text-[#d6c3a5]">About Me</p>
-            <h2 className="font-serif text-[clamp(3rem,7vw,7.4rem)] leading-[0.9] text-[#f5f1e8]">
-              Design taste with a security mind.
-            </h2>
-          </Reveal>
-          <Reveal delay={0.1} className="mt-8 grid gap-7 text-lg leading-8 text-[#b8b1a6] md:grid-cols-2">
-            <p>
-              I am an ambitious student at Gelpozhing College of Information Technology specializing in blockchain and cybersecurity.
-            </p>
-            <p>
-              My work blends web engineering, Agile product thinking, and visual systems that feel refined without losing clarity.
-            </p>
-          </Reveal>
-          <Reveal delay={0.2} className="mt-10 grid gap-4 rounded-[24px] border border-white/[0.08] bg-white/[0.03] p-6 backdrop-blur-xl md:grid-cols-3">
-            {["Blockchain", "Cybersecurity", "Frontend Motion"].map((item) => (
-              <div key={item} className="border-b border-white/[0.08] pb-4 md:border-b-0 md:border-r md:pb-0 last:md:border-r-0">
-                <p className="font-serif text-2xl text-[#f5f1e8]">{item}</p>
-                <p className="mt-2 text-sm leading-6 text-[#b8b1a6]">Focused craft, clean systems, and modern product quality.</p>
-              </div>
-            ))}
-          </Reveal>
-        </div>
+        <Reveal delay={0.08}>
+          <div className="about-card about-card-cinematic" onMouseMove={handleMove}>
+            <span className="about-card-light" />
+            <div className="grid gap-6 text-lg font-medium leading-8 text-white/64 md:text-xl md:leading-9">
+              {paragraphs.map((copy, index) => (
+                <motion.p
+                  key={copy}
+                  initial={{ opacity: 0, y: 24, filter: "blur(10px)" }}
+                  whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  viewport={{ once: true, margin: "-70px" }}
+                  transition={{ duration: 0.54, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                  className={index === 0 ? "about-lead-copy" : ""}
+                >
+                  {copy}
+                </motion.p>
+              ))}
+            </div>
+            <div className="process-timeline">
+              {processSteps.map((step, index) => (
+                <motion.button
+                  key={step}
+                  type="button"
+                  onMouseEnter={() => setActiveStep(step)}
+                  onFocus={() => setActiveStep(step)}
+                  initial={{ opacity: 0, y: 28 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  transition={{ duration: 0.38, delay: index * 0.045 }}
+                  className={`process-step ${activeStep === step ? "is-active" : ""}`}
+                >
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <strong>{step}</strong>
+                  <em>{["Listen", "Shape", "Engineer", "Tune", "Launch", "Improve"][index]}</em>
+                </motion.button>
+              ))}
+            </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
 }
 
-function InterfaceStudio() {
+function SkillGroup({ title, items, accent, index }: { title: string; items: string[]; accent: string; index: number }) {
+  const handleMove = (event: MouseEvent<HTMLElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty("--mx", `${event.clientX - rect.left}px`);
+    event.currentTarget.style.setProperty("--my", `${event.clientY - rect.top}px`);
+    event.currentTarget.style.setProperty("--accent", accent);
+  };
+
   return (
-    <section className="relative overflow-hidden bg-[#111111] px-5 py-24 md:px-8 lg:py-32">
-      <div className="cinema-glow right-[10%] top-[14%] bg-[#d6c3a5]/20" />
-      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-stretch">
-        <Reveal className="flex flex-col justify-between rounded-[24px] border border-white/[0.08] bg-[#0a0a0a]/70 p-7 backdrop-blur-xl md:p-10">
+    <motion.article
+      initial={{ opacity: 0, y: 50, rotateX: -8, filter: "blur(14px)" }}
+      whileInView={{ opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)" }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.72, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -10, rotateX: 2, rotateY: index === 1 ? 0 : index === 0 ? -2 : 2 }}
+      onMouseMove={handleMove}
+      className="skill-group skill-group-premium"
+      style={{ "--accent": accent } as CSSProperties}
+    >
+      <div className="skill-card-glow" />
+      <div className="relative z-10">
+        <div className="mb-8 flex items-start justify-between gap-5">
           <div>
-            <p className="text-xs uppercase tracking-[0.34em] text-[#d6c3a5]">Interface Studio</p>
-            <h2 className="mt-6 font-serif text-[clamp(3.6rem,8vw,8rem)] leading-[0.84] text-[#f5f1e8]">
-              Designing systems in motion.
-            </h2>
-            <p className="mt-7 max-w-xl text-base leading-8 text-[#b8b1a6]">
-              A small look at how I think through digital products: story first, layout second, motion last, all tuned until the experience feels clear and alive.
-            </p>
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-white/32">System 0{index + 1}</p>
+            <h3 className="mt-3 text-4xl font-black tracking-[-0.06em] text-white">{title}</h3>
           </div>
-
-          <div className="mt-10 grid grid-cols-3 gap-3">
-            {["UX", "Code", "Web3"].map((item) => (
-              <span key={item} className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-3 text-center text-xs uppercase tracking-[0.18em] text-[#b8b1a6]">
-                {item}
+          <span className="skill-core" />
+        </div>
+        <div className="skill-orbit-line" />
+        <div className="grid gap-3">
+          {items.map((item, index) => (
+            <motion.button
+              type="button"
+              key={item}
+              initial={{ opacity: 0, x: -18 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.38, delay: index * 0.04 }}
+              whileHover={{ x: 10, scale: 1.015 }}
+              className="skill-pill"
+            >
+              <span className="skill-icon">{item.slice(0, 2)}</span>
+              <span className="skill-name">{item}</span>
+              <span className="skill-meter">
+                <span style={{ width: `${88 - (index % 4) * 7}%` }} />
               </span>
-            ))}
-          </div>
-        </Reveal>
-
-        <Reveal delay={0.08}>
-          <motion.div
-            whileHover={{ y: -8 }}
-            className="hero-ui-card relative min-h-[560px] overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#111111] p-5 shadow-2xl shadow-black/30 md:p-7"
-          >
-            <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#d6c3a5]/20 blur-3xl" />
-            <div className="studio-sweep" />
-            <div className="relative flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <p className="text-xs uppercase tracking-[0.26em] text-[#d6c3a5]">Creative Signal</p>
-                <p className="mt-2 font-serif text-4xl leading-none text-[#f5f1e8]">Live Interface Lab</p>
-              </div>
-              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-3 text-[10px] uppercase tracking-[0.18em] text-[#d6c3a5]">
-                <span className="hero-pulse-dot" />
-                Live
-              </div>
-            </div>
-
-            <div className="relative mt-6 grid gap-4 lg:grid-cols-[1.12fr_0.88fr]">
-              <div className="studio-canvas min-h-[360px] rounded-[24px] border border-white/[0.08] bg-[#0a0a0a]/50 p-5">
-                <div className="studio-window studio-window-one">
-                  <span />
-                  <span />
-                  <span />
-                </div>
-                <div className="studio-window studio-window-two">
-                  <span />
-                  <span />
-                  <span />
-                </div>
-                <svg className="absolute inset-0 h-full w-full" viewBox="0 0 210 160" aria-hidden="true">
-                  <path className="studio-line" d="M30 118 C62 52 120 126 180 38" />
-                  <circle className="studio-point" cx="30" cy="118" r="5" />
-                  <circle className="studio-point studio-point-two" cx="180" cy="38" r="5" />
-                </svg>
-                <div className="absolute bottom-5 left-5 right-5 rounded-[18px] border border-white/[0.08] bg-white/[0.04] p-4 backdrop-blur">
-                  <p className="text-[10px] uppercase tracking-[0.22em] text-[#d6c3a5]">Design pulse</p>
-                  <div className="mt-3 flex h-20 items-end gap-2">
-                    {[42, 68, 52, 86, 64, 92, 58, 78].map((height, index) => (
-                      <span key={`${height}-${index}`} className="studio-bar" style={{ height: `${height}%`, animationDelay: `${index * 0.12}s` }} />
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid gap-3">
-                {[
-                  ["Story", "01", "What should the experience make clear?"],
-                  ["Layout", "02", "Where should attention move first?"],
-                  ["Motion", "03", "How should the interface feel alive?"],
-                ].map(([label, value, note], index) => (
-                  <div key={label} className="hero-row rounded-[20px] border border-white/[0.08] bg-white/[0.04] p-5" style={{ animationDelay: `${index * 0.35}s` }}>
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="text-xs uppercase tracking-[0.18em] text-[#b8b1a6]">{label}</span>
-                      <span className="font-serif text-3xl leading-none text-[#f5f1e8]">{value}</span>
-                    </div>
-                    <p className="mt-4 text-sm leading-6 text-[#b8b1a6]">{note}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        </Reveal>
+            </motion.button>
+          ))}
+        </div>
       </div>
-    </section>
+    </motion.article>
   );
 }
 
 function Skills() {
-  const [activeTab, setActiveTab] = useState(skillTabs[0].id);
-  const active = skillTabs.find((tab) => tab.id === activeTab) ?? skillTabs[0];
-  const ActiveIcon = active.icon;
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const depthOne = useTransform(scrollYProgress, [0, 1], [-80, 80]);
+  const depthTwo = useTransform(scrollYProgress, [0, 1], [70, -70]);
 
   return (
-    <section id="skills" className="relative overflow-hidden bg-[#111111] px-5 py-24 md:px-8 lg:py-36">
-      <div className="cinema-glow left-[4%] top-[22%] bg-[#8f3f4a]/20" />
-      <SectionHeader eyebrow="Capabilities" title="Hard skills, soft skills, and the life around the work." />
-
-      <Reveal className="mx-auto max-w-7xl">
-        <div className="rounded-[24px] border border-white/[0.08] bg-[#0a0a0a]/70 p-3 shadow-2xl shadow-black/40 backdrop-blur-2xl">
-          <div className="grid gap-2 md:grid-cols-4">
-            {skillTabs.map((tab) => {
-              const Icon = tab.icon;
-              const selected = tab.id === active.id;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`group relative overflow-hidden rounded-[20px] border px-5 py-5 text-left transition duration-300 ${selected
-                    ? "border-[#d6c3a5]/60 bg-[#d6c3a5] text-black"
-                    : "border-white/[0.08] bg-white/[0.03] text-[#f5f1e8] hover:border-[#d6c3a5]/40"
-                    }`}
-                >
-                  <span className="flex items-center justify-between gap-4">
-                    <Icon className="text-2xl" />
-                    <span className="text-xs uppercase tracking-[0.22em]">{tab.label}</span>
-                  </span>
-                  <span className={`mt-5 block font-serif text-2xl leading-none ${selected ? "text-black" : "text-[#f5f1e8]"}`}>
-                    {tab.kicker}
-                  </span>
-                </button>
-              );
-            })}
+    <section id="skills" ref={ref} className="skills-showcase section-shell overflow-hidden px-4 py-24 md:px-8 lg:py-36">
+      <motion.div style={{ y: depthOne }} className="skills-depth skills-depth-one" />
+      <motion.div style={{ y: depthTwo }} className="skills-depth skills-depth-two" />
+      <div className="relative z-10 mx-auto max-w-[1500px]">
+        <Reveal className="mb-12 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+          <div>
+            <p className="eyebrow">Skills Stack</p>
+            <h2 className="section-title max-w-5xl">A modular stack for product design, development and motion.</h2>
           </div>
-
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={active.id}
-              initial={{ opacity: 0, y: 24, filter: "blur(10px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -24, filter: "blur(10px)" }}
-              transition={{ duration: 0.45 }}
-              className="mt-4 grid gap-5 rounded-[24px] border border-white/[0.08] bg-[#111111]/80 p-5 md:grid-cols-[0.85fr_1.15fr] md:p-8"
-            >
-              <div className="relative overflow-hidden rounded-[24px] border border-white/[0.08] bg-white/[0.03] p-7">
-                <div className="absolute -right-14 -top-14 h-48 w-48 rounded-full bg-[#d6c3a5]/20 blur-3xl" />
-                <ActiveIcon className="relative text-4xl text-[#d6c3a5]" />
-                <p className="relative mt-8 text-xs uppercase tracking-[0.34em] text-[#d6c3a5]">{active.label}</p>
-                <h3 className="relative mt-4 font-serif text-[clamp(2.7rem,5vw,5.8rem)] leading-[0.9] text-[#f5f1e8]">
-                  {active.kicker}
-                </h3>
-                <p className="relative mt-6 max-w-md text-base leading-7 text-[#b8b1a6]">{active.summary}</p>
-              </div>
-
-              <div className="grid gap-3">
-                {active.skills.map((skill, index) => {
-                  const Icon = skill.icon;
-                  return (
-                    <motion.div
-                      key={skill.name}
-                      initial={{ opacity: 0, x: 24 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.45, delay: index * 0.05 }}
-                      className="group rounded-[24px] border border-white/[0.08] bg-[#0a0a0a]/60 p-5 transition hover:border-[#d6c3a5]/50 hover:bg-white/[0.04]"
-                    >
-                      <div className="flex items-start justify-between gap-5">
-                        <div className="flex items-center gap-4">
-                          <span className="rounded-full border border-white/10 bg-white/[0.04] p-3 text-[#d6c3a5]">
-                            <Icon />
-                          </span>
-                          <div>
-                            <h4 className="font-serif text-2xl text-[#f5f1e8]">{skill.name}</h4>
-                            <p className="mt-1 text-sm text-[#b8b1a6]">{skill.note}</p>
-                          </div>
-                        </div>
-                        <span className="font-serif text-3xl text-[#d6c3a5]">{skill.level}</span>
-                      </div>
-                      <div className="mt-5 h-1 overflow-hidden rounded-full bg-white/[0.08]">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${skill.level}%` }}
-                          transition={{ duration: 0.7, delay: 0.1 }}
-                          className="h-full rounded-full bg-[#d6c3a5]"
-                        />
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </motion.div>
-          </AnimatePresence>
+          <div className="skills-command-panel">
+            <span className="status-dot" />
+            <p>Hover the systems. Each module responds with light, motion, depth, and confidence indicators.</p>
+          </div>
+        </Reveal>
+        <Reveal className="mb-8">
+          <div className="skill-cloud">
+            {[...designSkills.slice(0, 4), ...devSkills.slice(0, 4), ...tools].map((item, index) => (
+              <motion.span
+                key={item}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.35, delay: index * 0.025 }}
+                whileHover={{ y: -6, scale: 1.08 }}
+              >
+                {item}
+              </motion.span>
+            ))}
+          </div>
+        </Reveal>
+        <div className="grid gap-5 lg:grid-cols-3">
+          <SkillGroup title="Product Design" items={designSkills} accent="#ff4d2a" index={0} />
+          <SkillGroup title="Development" items={devSkills} accent="#37d6ff" index={1} />
+          <SkillGroup title="Tools" items={tools} accent="#b987ff" index={2} />
         </div>
-      </Reveal>
+        <Reveal className="mt-10">
+          <Marquee items={["Design Systems", "Motion UI", "React", "Figma", "Web3 Interfaces", "Responsive Systems"]} reverse />
+        </Reveal>
+      </div>
+    </section>
+  );
+}
 
-      <Reveal delay={0.12} className="mx-auto mt-8 max-w-7xl">
-        <div className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="rounded-[24px] border border-white/[0.08] bg-[#0a0a0a]/70 p-7 backdrop-blur-xl md:p-9">
-            <p className="text-xs uppercase tracking-[0.34em] text-[#d6c3a5]">Beyond Code</p>
-            <h3 className="mt-5 font-serif text-[clamp(2.8rem,6vw,6.6rem)] leading-[0.88] text-[#f5f1e8]">
-              Taste, discipline, and human rhythm.
-            </h3>
-            <p className="mt-6 max-w-xl text-base leading-8 text-[#b8b1a6]">
-              These interests shape how I design: sport gives me pace, games sharpen systems thinking, travel gives me empathy, communication gives me clarity, and collecting perfume keeps my eye tuned to subtle detail.
-            </p>
+function SoftSkills() {
+  const ref = useRef<HTMLElement>(null);
+  const [active, setActive] = useState(softSkills[0]);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const depth = useTransform(scrollYProgress, [0, 1], [-60, 60]);
+
+  const handleMove = (event: MouseEvent<HTMLElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty("--mx", `${event.clientX - rect.left}px`);
+    event.currentTarget.style.setProperty("--my", `${event.clientY - rect.top}px`);
+  };
+
+  return (
+    <section ref={ref} className="soft-skills-section section-shell overflow-hidden px-4 py-24 md:px-8 lg:py-36">
+      <motion.div style={{ y: depth }} className="soft-depth-light" />
+      <div className="relative z-10 mx-auto max-w-[1500px]">
+        <Reveal className="mb-12 grid gap-7 lg:grid-cols-[0.75fr_1.25fr]">
+          <div>
+            <p className="eyebrow">Soft Skills</p>
+            <h2 className="section-title">Human skills that make product work move.</h2>
           </div>
+          <p className="self-end text-lg font-medium leading-8 text-white/56">
+            The technical work matters, but good products also need clarity, taste, communication and calm collaboration.
+          </p>
+        </Reveal>
+        <div className="soft-interaction-shell">
+          <div className="soft-active-panel">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={active}
+                initial={{ opacity: 0, y: 24, filter: "blur(14px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -18, filter: "blur(14px)" }}
+                transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <p>Active human system</p>
+                <h3>{active}</h3>
+                <span>Communication, taste, calm decision-making, and ownership become product quality when the pressure rises.</span>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+          <div className="soft-grid">
+          {softSkills.map((skill, index) => (
+            <motion.button
+              key={skill}
+              type="button"
+              onMouseMove={handleMove}
+              onMouseEnter={() => setActive(skill)}
+              onFocus={() => setActive(skill)}
+              initial={{ opacity: 0, y: 36, filter: "blur(12px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true, margin: "-70px" }}
+              whileHover={{ y: -10, scale: 1.025, rotateX: 2 }}
+              transition={{ duration: 0.42, delay: index * 0.035, ease: [0.22, 1, 0.36, 1] }}
+              className={`soft-card ${active === skill ? "is-active" : ""}`}
+            >
+              <span className="soft-card-glow" />
+              <span className="soft-number">{String(index + 1).padStart(2, "0")}</span>
+              <strong>{skill}</strong>
+              <em>{["Lead", "Align", "Create", "Build", "Solve"][index % 5]}</em>
+            </motion.button>
+          ))}
+          </div>
+        </div>
+      </div>
+      <Marquee items={softSkills} reverse />
+    </section>
+  );
+}
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            {interests.map((item, index) => {
-              const Icon = item.icon;
-              return (
+function EducationExperience() {
+  const [open, setOpen] = useState(0);
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const journeyY = useTransform(scrollYProgress, [0, 1], [-44, 44]);
+
+  return (
+    <section id="experience" ref={ref} className="journey-section section-shell overflow-hidden px-4 py-24 md:px-8 lg:py-36">
+      <motion.div style={{ y: journeyY }} className="journey-depth" />
+      <div className="relative z-10 mx-auto grid max-w-[1500px] gap-12 lg:grid-cols-[0.78fr_1.22fr]">
+        <Reveal className="journey-sticky">
+          <p className="eyebrow">Education / Experience</p>
+          <h2 className="section-title">A path through school, systems and product builds.</h2>
+          <p className="journey-copy">A growth timeline across computer science, product interfaces, Web3 concepts, teamwork and trust-focused systems.</p>
+        </Reveal>
+        <div className="grid gap-12">
+          <Reveal>
+            <div className="timeline">
+              {education.map((item, index) => (
                 <motion.article
                   key={item.title}
-                  whileHover={{ y: -6 }}
-                  className={`relative overflow-hidden rounded-[24px] border border-white/[0.08] bg-white/[0.03] p-6 ${index >= 4 ? "sm:col-span-2" : ""
-                    }`}
+                  initial={{ opacity: 0, x: 34, filter: "blur(12px)" }}
+                  whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  whileHover={{ x: 8 }}
+                  transition={{ duration: 0.48, delay: index * 0.08 }}
+                  className="timeline-item"
                 >
-                  <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-[#d6c3a5]/10 blur-3xl" />
-                  <Icon className="relative text-3xl text-[#d6c3a5]" />
-                  <h4 className="relative mt-7 font-serif text-3xl text-[#f5f1e8]">{item.title}</h4>
-                  <p className="relative mt-3 text-sm leading-6 text-[#b8b1a6]">{item.detail}</p>
+                  <span className="timeline-dot" />
+                  <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#ff4d2a]">{item.years}</p>
+                  <h3 className="mt-3 text-3xl font-black tracking-[-0.04em] text-white">{item.title}</h3>
+                  <p className="mt-2 text-white/48">{item.place}</p>
+                  <p className="mt-4 leading-7 text-white/58">{item.details}</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {item.coursework.map((course) => (
+                      <span key={course} className="tech-chip">{course}</span>
+                    ))}
+                  </div>
                 </motion.article>
-              );
-            })}
-          </div>
-        </div>
-      </Reveal>
-    </section>
-  );
-}
-
-function Projects() {
-  const projectLayout = [
-    "lg:col-span-7 lg:row-span-2 min-h-[620px]",
-    "lg:col-span-5 min-h-[360px]",
-    "lg:col-span-5 min-h-[360px]",
-    "lg:col-span-4 min-h-[430px]",
-    "lg:col-span-4 min-h-[430px]",
-    "lg:col-span-4 min-h-[430px]",
-  ];
-
-  return (
-    <section id="projects" className="relative overflow-hidden px-5 py-24 md:px-8 lg:py-36">
-      <SectionHeader eyebrow="Selected Work" title="Asymmetrical builds with product gravity." />
-
-      <div className="mx-auto grid max-w-7xl auto-rows-[minmax(320px,auto)] gap-5 md:grid-cols-2 lg:grid-cols-12">
-        {projects.map((project, index) => (
-          <Reveal
-            key={project.title}
-            delay={index * 0.04}
-            className={projectLayout[index]}
-          >
-            <motion.article
-              whileHover={{ y: -8 }}
-              className="project-card group relative flex h-full overflow-hidden rounded-[24px] border border-[#d6c3a5]/20 bg-[#14110d]"
-            >
-              <Image
-                src={project.image}
-                alt={`${project.title} preview`}
-                fill
-                priority={index === 0}
-                className={`object-cover transition duration-700 group-hover:scale-110 ${index === 0 ? "object-left-top" : ""}`}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/95 via-[#0a0a0a]/48 to-[#0a0a0a]/5" />
-              <div className="absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100">
-                <div className="absolute inset-x-0 top-0 h-1/2 bg-[radial-gradient(circle_at_50%_0%,rgba(214,195,165,0.28),transparent_62%)]" />
-              </div>
-
-              <div className="absolute left-5 top-5 z-10 flex flex-wrap items-center gap-2 md:left-7 md:top-7">
-                {index === 0 && (
-                  <span className="rounded-full border border-white/10 bg-[#d6c3a5] px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-black shadow-2xl">
-                    Featured
-                  </span>
-                )}
-                <span className="rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-[#d6c3a5] backdrop-blur">
-                  {project.category}
-                </span>
-              </div>
-
-              <div className="absolute inset-x-0 bottom-0 z-10 p-5 md:p-7 lg:p-8">
-                <div className="mb-5 flex flex-wrap items-center gap-2 opacity-90">
-                  <span className="rounded-full border border-white/10 bg-black/30 px-3 py-1 text-xs uppercase tracking-[0.18em] text-[#d6c3a5] backdrop-blur">
-                    {index === 0 ? "Blockchain" : project.stack[0]}
-                  </span>
-                  {project.stack.slice(index === 0 ? 1 : 1, index === 0 ? 3 : 3).map((item) => (
-                    <span key={item} className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-[#f5f1e8] backdrop-blur">
-                      {item}
-                    </span>
-                  ))}
-                </div>
-                <h3 className={`${index === 0 ? "max-w-2xl text-[clamp(3.4rem,7vw,7.8rem)]" : "text-[clamp(2.35rem,4.2vw,4.8rem)]"} font-serif leading-none text-[#f5f1e8]`}>
-                  {project.title}
-                </h3>
-                <p className={`${index === 0 ? "max-w-2xl text-base md:text-lg" : "max-w-xl text-sm md:text-base"} mt-4 leading-7 text-[#b8b1a6]`}>
-                  {project.description}
-                </p>
-                <div className="mt-5 flex flex-wrap gap-3">
-                  {project.code ? (
-                    <a
-                      href={project.code}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-2 rounded-full bg-[#d6c3a5] px-4 py-3 text-xs uppercase tracking-[0.18em] text-black transition hover:scale-[1.03]"
-                    >
-                      Source code {project.code.includes("gitlab") ? <FiGitlab /> : <FiGithub />}
-                    </a>
-                  ) : (
-                    <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/20 px-4 py-3 text-xs uppercase tracking-[0.18em] text-[#b8b1a6] backdrop-blur">
-                      Source link coming soon
-                    </span>
-                  )}
-                </div>
-              </div>
-            </motion.article>
-          </Reveal>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function Journey() {
-  return (
-    <section id="journey" className="bg-[#111111] px-5 py-24 md:px-8 lg:py-36">
-      <SectionHeader eyebrow="Experience Timeline" title="A path shaped by learning, systems, and taste." />
-      <div className="timeline mx-auto max-w-5xl">
-        {timeline.map((item, index) => (
-          <Reveal key={item.title} delay={index * 0.05} className="timeline-item relative grid gap-5 border-l border-white/[0.08] pb-12 pl-8 last:pb-0 md:grid-cols-[180px_1fr]">
-            <div className="timeline-node absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-[#d6c3a5] shadow-[0_0_32px_rgba(214,195,165,0.8)]" />
-            <p className="text-sm uppercase tracking-[0.22em] text-[#d6c3a5]">{item.year}</p>
-            <div className="rounded-[24px] border border-white/[0.08] bg-[#0a0a0a]/70 p-6">
-              <h3 className="font-serif text-3xl text-[#f5f1e8]">{item.title}</h3>
-              <p className="mt-2 text-sm uppercase tracking-[0.18em] text-[#b8b1a6]">{item.place}</p>
-              <p className="mt-4 leading-7 text-[#b8b1a6]">{item.body}</p>
+              ))}
             </div>
           </Reveal>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function Testimonials() {
-  return (
-    <section className="px-5 py-24 md:px-8 lg:py-36">
-      <SectionHeader eyebrow="Signals" title="Quiet confidence from the people around the work." />
-      <div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-3">
-        {testimonials.map((item, index) => (
-          <Reveal key={item.name} delay={index * 0.07}>
-            <motion.article
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 5 + index, repeat: Infinity, ease: "easeInOut" }}
-              className="min-h-[300px] rounded-[24px] border border-white/[0.08] bg-white/[0.03] p-7 backdrop-blur-xl"
-            >
-              <p className="font-serif text-3xl leading-tight text-[#f5f1e8]">&ldquo;{item.quote}&rdquo;</p>
-              <div className="mt-10">
-                <p className="text-[#d6c3a5]">{item.name}</p>
-                <p className="mt-1 text-sm uppercase tracking-[0.2em] text-[#b8b1a6]">{item.role}</p>
-              </div>
-            </motion.article>
+          <Reveal>
+            <div className="experience-panels">
+              {experience.map((item, index) => (
+                <motion.button
+                  key={item.role}
+                  type="button"
+                  initial={{ opacity: 0, y: 28, filter: "blur(10px)" }}
+                  whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  whileHover={{ y: -8, scale: 1.01 }}
+                  transition={{ duration: 0.42, delay: index * 0.055 }}
+                  onClick={() => setOpen(index)}
+                  className={`experience-panel ${item.role.includes("Blockchain") ? "security-panel" : ""} ${open === index ? "is-open" : ""}`}
+                >
+                  {item.role.includes("Blockchain") && (
+                    <>
+                      <span className="security-grid" />
+                      <span className="security-orbit" />
+                    </>
+                  )}
+                  <span className="text-xs font-bold uppercase tracking-[0.24em] text-white/35">{item.years}</span>
+                  <span className="mt-3 block text-left text-3xl font-black tracking-[-0.04em] text-white">{item.role}</span>
+                  <span className="mt-2 block text-left text-white/48">{item.company}</span>
+                  <AnimatePresence>
+                    {open === index && (
+                      <motion.span initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="block overflow-hidden">
+                        <span className="mt-5 block text-left leading-7 text-white/62">{item.body}</span>
+                        {item.role.includes("Blockchain") && (
+                          <span className="security-focus-grid">
+                            {["Identity", "Verification", "Tokenization", "Trust", "Audit", "Authentication"].map((label) => (
+                              <span key={label}>{label}</span>
+                            ))}
+                          </span>
+                        )}
+                        <span className="mt-4 flex flex-wrap gap-2">
+                          {item.wins.map((win) => (
+                            <span key={win} className="tech-chip">{win}</span>
+                          ))}
+                        </span>
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
+              ))}
+            </div>
           </Reveal>
-        ))}
+        </div>
       </div>
     </section>
   );
 }
 
-function Contact() {
+function GalleryFlowItem({
+  item,
+  index,
+  active,
+  onActivate,
+}: {
+  item: (typeof galleryItems)[number];
+  index: number;
+  active: boolean;
+  onActivate: (item: (typeof galleryItems)[number]) => void;
+}) {
+  const ref = useRef<HTMLButtonElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 0.5, 1], [92, 0, -92]);
+  const rotate = useTransform(scrollYProgress, [0, 0.5, 1], [index % 2 ? 4 : -4, 0, index % 2 ? -3 : 3]);
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.86, 1, 0.9]);
+  const opacity = useTransform(scrollYProgress, [0, 0.18, 0.82, 1], [0.22, 1, 1, 0.28]);
+  const blur = useTransform(scrollYProgress, [0, 0.28, 0.72, 1], ["blur(12px)", "blur(0px)", "blur(0px)", "blur(12px)"]);
+  const handleMove = (event: MouseEvent<HTMLElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty("--mx", `${event.clientX - rect.left}px`);
+    event.currentTarget.style.setProperty("--my", `${event.clientY - rect.top}px`);
+  };
+
   return (
-    <section id="contact" className="relative overflow-hidden px-5 py-24 md:px-8 lg:py-36">
-      <div className="cinema-glow left-[12%] top-[20%] bg-[#d6c3a5]/20" />
-      <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_0.9fr]">
-        <Reveal>
-          <p className="mb-5 text-xs uppercase tracking-[0.34em] text-[#d6c3a5]">Contact</p>
-          <h2 className="font-serif text-[clamp(4rem,10vw,10rem)] leading-[0.82] text-[#f5f1e8]">
-            Let&apos;s build something secure and cinematic.
-          </h2>
-          <div className="mt-10 grid gap-4 text-[#b8b1a6]">
-            <a href="tel:+97517495130" className="flex items-center gap-4 transition hover:text-[#f5f1e8]">
-              <FiPhone className="text-[#d6c3a5]" /> (+975) 17495130
-            </a>
-            <a href="mailto:ngawangg927@gmail.com" className="flex items-center gap-4 transition hover:text-[#f5f1e8]">
-              <FiMail className="text-[#d6c3a5]" /> ngawangg927@gmail.com
-            </a>
-            <p className="flex items-center gap-4">
-              <FiMapPin className="text-[#d6c3a5]" /> Thimphu, Bhutan
-            </p>
+    <motion.button
+      ref={ref}
+      type="button"
+      onMouseMove={handleMove}
+      onMouseEnter={() => onActivate(item)}
+      onFocus={() => onActivate(item)}
+      onViewportEnter={() => onActivate(item)}
+      style={{ y, rotate, scale, opacity, filter: blur }}
+      className={`gallery-flow-item ${active ? "is-active" : ""}`}
+    >
+      <span className="gallery-flow-copy">
+        <span>{item.number}</span>
+        <strong>{item.title}</strong>
+        <em>Scroll-linked frame / image archive</em>
+      </span>
+      <span className="gallery-flow-image">
+        <img src={item.image} alt={item.title} loading={index < 2 ? "eager" : "lazy"} decoding="async" onError={imageFallback} />
+      </span>
+    </motion.button>
+  );
+}
+
+function Gallery() {
+  const ref = useRef<HTMLElement>(null);
+  const [active, setActive] = useState(galleryItems[0]);
+  const activeIndex = galleryItems.findIndex((item) => item.image === active.image);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const fieldY = useTransform(scrollYProgress, [0, 1], [-34, 34]);
+  const fieldScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.96, 1, 0.98]);
+
+  const getOrbitStyle = (index: number) => {
+    const angle = (index / galleryItems.length) * Math.PI * 2 - Math.PI / 2;
+    const x = 50 + Math.cos(angle) * 42;
+    const y = 50 + Math.sin(angle) * 38;
+    const tilt = Math.sin(angle) * 16;
+    return {
+      "--x": `${x}%`,
+      "--y": `${y}%`,
+      "--tilt": `${tilt}deg`,
+      "--delay": `${index * -0.35}s`,
+    } as CSSProperties;
+  };
+
+  return (
+    <section id="gallery" ref={ref} className="gallery-orbital-section section-shell overflow-hidden border-y border-white/10 px-4 py-24 md:px-8 lg:py-36">
+      <div className="mx-auto max-w-[1500px]">
+        <Reveal className="gallery-orbital-heading mb-12 grid gap-7 lg:grid-cols-[0.8fr_1.2fr]">
+          <div>
+            <p className="eyebrow">Gallery</p>
+            <h2 className="section-title">Orbital visual exhibition.</h2>
           </div>
-          <div className="mt-8 flex gap-3">
-            {socialLinks.map((social) => {
+          <p className="self-end text-lg font-medium leading-8 text-white/56">
+            A curated circular image system inspired by digital exhibition interfaces. Hover the orbiting frames to shift the center story with quiet cinematic motion.
+          </p>
+        </Reveal>
+
+        <motion.div style={{ y: fieldY, scale: fieldScale }} className="orbital-gallery-stage">
+          <div className="orbital-rings" />
+          <div className="orbital-axis orbital-axis-left">Curated Frames</div>
+          <div className="orbital-axis orbital-axis-right">Personal Archive</div>
+
+          <motion.article layout className="orbital-feature-card">
+            <div className="orbital-feature-media">
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={active.image}
+                  src={active.image}
+                  alt={active.title}
+                  loading="eager"
+                  decoding="async"
+                  onError={imageFallback}
+                  initial={{ opacity: 0, scale: 1.08, filter: "blur(16px) grayscale(0.75)" }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px) grayscale(0.05)" }}
+                  exit={{ opacity: 0, scale: 0.96, filter: "blur(16px) grayscale(0.9)" }}
+                  transition={{ duration: 0.58, ease: [0.22, 1, 0.36, 1] }}
+                />
+              </AnimatePresence>
+            </div>
+            <div className="orbital-feature-copy">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={active.title}
+                  initial={{ opacity: 0, y: 16, filter: "blur(8px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, y: -12, filter: "blur(8px)" }}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <p>{active.number} / {galleryItems.length.toString().padStart(2, "0")}</p>
+                  <h3>{active.title}</h3>
+                  <span>A cinematic frame from the personal archive, composed as a curated digital exhibition piece.</span>
+                </motion.div>
+              </AnimatePresence>
+              <a href="#contact" className="orbital-cta">
+                View story <FiArrowUpRight />
+              </a>
+            </div>
+          </motion.article>
+
+          <div className="orbital-thumbs" aria-label="Gallery image selector">
+            {galleryItems.map((item, index) => (
+              <motion.button
+                key={item.image}
+                type="button"
+                onMouseEnter={() => setActive(item)}
+                onFocus={() => setActive(item)}
+                transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+                style={getOrbitStyle(index)}
+                className={`orbital-thumb ${active.image === item.image ? "is-active" : ""}`}
+              >
+                <img src={item.image} alt={item.title} loading={index < 4 ? "eager" : "lazy"} decoding="async" onError={imageFallback} />
+                <span>{item.number}</span>
+              </motion.button>
+            ))}
+          </div>
+
+          <div className="orbital-mobile-strip">
+            {galleryItems.map((item) => (
+              <button
+                key={item.image}
+                type="button"
+                onClick={() => setActive(item)}
+                onFocus={() => setActive(item)}
+                className={active.image === item.image ? "is-active" : ""}
+              >
+                <img src={item.image} alt={item.title} loading="lazy" decoding="async" onError={imageFallback} />
+              </button>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+/*
+function GalleryOld() {
+  const ref = useRef<HTMLElement>(null);
+  const [active, setActive] = useState(galleryItems[0]);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const previewY = useTransform(scrollYProgress, [0, 1], [-70, 70]);
+  const previewRotate = useTransform(scrollYProgress, [0, 1], [-1.5, 1.5]);
+  const counterY = useTransform(scrollYProgress, [0, 1], [40, -40]);
+
+  return (
+    <section id="gallery-old" ref={ref} className="gallery-stack-section section-shell overflow-hidden border-y border-white/10 px-4 py-24 md:px-8 lg:py-36">
+      <div className="mx-auto max-w-[1500px]">
+        <div className="gallery-flow-layout">
+          <div className="gallery-cinema-shell">
+            <motion.div style={{ y: previewY, rotate: previewRotate }} className="gallery-sticky-preview">
+              <div className="gallery-preview-shell">
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={active.image}
+                    src={active.image}
+                    alt={active.title}
+                    loading="eager"
+                    decoding="async"
+                    onError={imageFallback}
+                    initial={{ opacity: 0, scale: 1.12, filter: "blur(22px) grayscale(0.65)" }}
+                    animate={{ opacity: 1, scale: 1.04, filter: "blur(0px) grayscale(0.08)" }}
+                    exit={{ opacity: 0, scale: 0.96, filter: "blur(18px) grayscale(0.8)" }}
+                    transition={{ duration: 0.78, ease: [0.22, 1, 0.36, 1] }}
+                    className="h-full w-full object-cover"
+                  />
+                </AnimatePresence>
+                <div className="gallery-preview-vignette" />
+                <div className="gallery-preview-copy">
+                  <p>{active.number}</p>
+                  <h3>{active.title}</h3>
+                  <span>Personal frame / cinematic archive</span>
+                </div>
+              </div>
+              <motion.div style={{ y: counterY }} className="gallery-counter">
+                {active.number} / {galleryItems.length.toString().padStart(2, "0")}
+              </motion.div>
+            </motion.div>
+          </div>
+
+          <div className="gallery-flow-list">
+            {galleryItems.map((item, index) => (
+              <GalleryFlowItem
+                key={item.image}
+                item={item}
+                index={index}
+                active={active.image === item.image}
+                onActivate={setActive}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+*/
+
+function Footer() {
+  return (
+    <footer id="contact" className="footer-section relative overflow-hidden px-4 py-24 md:px-8 lg:py-36">
+      <img src="/dist/images/12.webp" alt="" onError={imageFallback} className="footer-bg" />
+      <div className="relative z-10 mx-auto grid max-w-[1500px] gap-10 lg:grid-cols-[1.08fr_0.92fr]">
+        <Reveal>
+          <p className="eyebrow">Contact</p>
+          <h2 className="max-w-5xl text-[clamp(4rem,11vw,12rem)] font-black leading-[0.8] tracking-[-0.09em] text-white">
+            LET&apos;S BUILD SOMETHING HIGH TRUST.
+          </h2>
+          <div className="mt-8 text-[#ff4d2a]">
+            <Marquee items={["ngawangg927@gmail.com", "(+975) 17495130", "Thimphu Bhutan"]} />
+          </div>
+        </Reveal>
+        <Reveal delay={0.08} className="footer-card">
+          <div className="status-line">
+            <span className="status-dot" />
+            <span>Available for selected collaborations</span>
+          </div>
+          <div className="mt-8 grid gap-5 text-lg font-semibold text-white/70">
+            <a href="mailto:ngawangg927@gmail.com" className="contact-link"><FiMail /> ngawangg927@gmail.com</a>
+            <a href={whatsappUrl} target="_blank" rel="noreferrer" className="contact-link"><FiPhone /> (+975) 17495130 / WhatsApp</a>
+            <span className="contact-link"><FiMapPin /> Thimphu, Bhutan</span>
+          </div>
+          <div className="mt-8 flex flex-wrap gap-3">
+            {socials.map((social) => {
               const Icon = social.icon;
               return (
-                <a key={social.label} href={social.href} target="_blank" aria-label={social.label} className="rounded-full border border-white/10 p-4 text-[#f5f1e8] transition hover:border-[#d6c3a5] hover:bg-[#d6c3a5] hover:text-black">
-                  <Icon />
+                <a key={social.label} href={social.href} target="_blank" rel="noreferrer" className="social-button">
+                  <Icon /> {social.label}
                 </a>
               );
             })}
           </div>
+          <p className="mt-12 text-sm text-white/38">(c) 2026 Ngawang Gyeltshen. Designed for digital trust.</p>
         </Reveal>
-        <Reveal delay={0.12}>
-          <form className="rounded-[24px] border border-white/[0.08] bg-[#111111]/80 p-5 shadow-2xl backdrop-blur-xl md:p-8">
-            <div className="grid gap-5">
-              <label className="grid gap-2 text-sm uppercase tracking-[0.2em] text-[#b8b1a6]">
-                Name
-                <input className="glow-input" placeholder="Your name" />
-              </label>
-              <label className="grid gap-2 text-sm uppercase tracking-[0.2em] text-[#b8b1a6]">
-                Email
-                <input className="glow-input" placeholder="you@example.com" type="email" />
-              </label>
-              <label className="grid gap-2 text-sm uppercase tracking-[0.2em] text-[#b8b1a6]">
-                Project
-                <textarea className="glow-input min-h-36 resize-none" placeholder="Tell me what you want to create" />
-              </label>
-              <button type="button" className="magnetic mt-2 inline-flex items-center justify-center gap-3 rounded-full bg-[#d6c3a5] px-6 py-4 text-sm uppercase tracking-[0.22em] text-black transition hover:scale-[1.02]">
-                Send message <FiArrowUpRight />
-              </button>
-            </div>
-          </form>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="border-t border-white/[0.08] px-5 py-10 md:px-8">
-      <div className="mx-auto flex max-w-7xl flex-col gap-6 text-sm text-[#b8b1a6] md:flex-row md:items-center md:justify-between">
-        <p className="font-serif text-3xl text-[#f5f1e8]">NG</p>
-        <p>© 2026 Ngawang Gyeltshen. Crafted with motion, code, and intention.</p>
-        <div className="flex gap-5">
-          {socialLinks.map((social) => (
-            <a key={social.label} href={social.href} target="_blank" className="transition hover:text-[#d6c3a5]">
-              {social.label}
-            </a>
-          ))}
-        </div>
       </div>
     </footer>
   );
 }
 
-export default function Home() {
-  const lenis = useRef<Lenis | null>(null);
-  const [theme, setTheme] = useState<"dark" | "light">("light");
-
+export default function App() {
   useEffect(() => {
-    lenis.current = new Lenis({ lerp: 0.08, wheelMultiplier: 0.9 });
+    const lenis = new Lenis({ lerp: 0.075, wheelMultiplier: 0.85, touchMultiplier: 1.15 });
+    let frame = 0;
     const raf = (time: number) => {
-      lenis.current?.raf(time);
-      requestAnimationFrame(raf);
+      lenis.raf(time);
+      frame = requestAnimationFrame(raf);
     };
-    requestAnimationFrame(raf);
-
-    gsap.utils.toArray<HTMLElement>(".project-card").forEach((card) => {
-      gsap.fromTo(
-        card,
-        { y: 80, opacity: 0.7 },
-        {
-          y: 0,
-          opacity: 1,
-          scrollTrigger: {
-            trigger: card,
-            start: "top 88%",
-            end: "top 45%",
-            scrub: true,
-          },
-        },
-      );
-    });
-
+    frame = requestAnimationFrame(raf);
     return () => {
-      lenis.current?.destroy();
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      cancelAnimationFrame(frame);
+      lenis.destroy();
     };
   }, []);
 
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-  }, [theme]);
+  const preloadedImages = useMemo(() => [projects[0].image, galleryItems[0].image], []);
 
   return (
-    <main data-theme={theme} className="relative min-h-screen overflow-hidden bg-[#0a0a0a] text-[#f5f1e8]">
-      <CustomCursor />
-      <div className="grain" />
-      <Navbar theme={theme} onToggleTheme={() => setTheme((current) => (current === "dark" ? "light" : "dark"))} />
+    <main className="min-h-screen bg-[#050505] text-white">
+      {preloadedImages.map((src) => (
+        <link key={src} rel="preload" as="image" href={src} />
+      ))}
+      <CursorLight />
+      <Navbar />
       <Hero />
+      <Work />
       <About />
-      <InterfaceStudio />
       <Skills />
-      <Projects />
-      <Journey />
-      <Testimonials />
-      <Contact />
+      <SoftSkills />
+      <EducationExperience />
+      <Gallery />
       <Footer />
     </main>
   );
