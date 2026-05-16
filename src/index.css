@@ -513,16 +513,14 @@ body.is-loading .cursor-spinner,
   width: 100%;
   gap: 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 1.35rem 0;
+  padding: 1.35rem 1rem;
   text-align: left;
-  transition: padding 220ms ease, background 220ms ease, box-shadow 220ms ease;
+  transition: background 220ms ease, box-shadow 220ms ease;
 }
 
 .project-index-row:hover,
 .project-index-row:focus-visible,
 .project-index-row.is-active {
-  padding-left: 1rem;
-  padding-right: 1rem;
   background: rgba(255, 255, 255, 0.045);
   box-shadow: inset 3px 0 0 #ff4d2a;
   outline: none;

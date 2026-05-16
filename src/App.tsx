@@ -101,6 +101,18 @@ const projects: Project[] = [
     href: "https://gitlab.com/csf202_agile-software-engineering-practice/taxico",
   },
   {
+    title: "Yesheey Tourism",
+    category: "Tourism Website",
+    role: "Frontend Developer",
+    year: "2025",
+    image: "/images/optimized/yesheey-tourism-1400.jpg",
+    summary:
+      "A Bhutan tourism website with destination discovery, booking prompts and a visual travel experience built around local culture and landscapes.",
+    stack: ["Tourism UX", "Frontend", "Responsive", "Booking"],
+    result: "Presented Bhutan travel experiences with clearer browsing and booking intent.",
+    href: "https://github.com/Mericle123/Tourism",
+  },
+  {
     title: "Applymate",
     category: "Admissions UX",
     role: "UI/UX Designer",
@@ -122,6 +134,19 @@ const projects: Project[] = [
       "A travel booking experience for flights, hotels and curated Bhutan services with clean browsing and decision confidence.",
     stack: ["Frontend", "Travel UX", "Booking", "Responsive"],
     result: "Made travel planning more visual, guided and direct.",
+    href: "https://github.com/Mericle123/Areo",
+  },
+  {
+    title: "Dynamo Tourism",
+    category: "Premium Tourism",
+    role: "Frontend Developer",
+    year: "2025",
+    image: "/images/optimized/dynamo-tourism-1400.jpg",
+    summary:
+      "A premium Bhutan tourism landing experience focused on tour discovery, strong visual hierarchy, contact actions and immersive destination storytelling.",
+    stack: ["Tourism UX", "Frontend", "Landing Page", "Responsive"],
+    result: "Created a polished first impression for tour exploration and inquiry flow.",
+    href: "https://github.com/RadaDev619/DyanamoTourism",
   },
 ];
 
@@ -550,12 +575,14 @@ function Work() {
         <div className="grid gap-8 lg:grid-cols-[0.98fr_1.02fr]">
           <Reveal>
             <div className="project-index">
-              {projects.map((project, index) => (
-                <button
+              {projects.map((project) => (
+                <div
                   key={project.title}
-                  type="button"
-                  onMouseEnter={() => setActive(project)}
-                  onFocus={() => setActive(project)}
+                  tabIndex={0}
+                  onPointerEnter={() => setActive(project)}
+                  onPointerMove={() => active.title !== project.title && setActive(project)}
+                  onClick={() => setActive(project)}
+                  onFocusCapture={() => setActive(project)}
                   className={`project-index-row ${active.title === project.title ? "is-active" : ""}`}
                 >
                   <span className="project-number">{project.year}</span>
@@ -577,7 +604,7 @@ function Work() {
                       </a>
                     )}
                   </span>
-                </button>
+                </div>
               ))}
             </div>
           </Reveal>
@@ -1309,7 +1336,15 @@ export default function App() {
     };
   }, []);
 
-  const preloadedImages = useMemo(() => [projects[0].image, galleryItems[0].image], []);
+  const preloadedImages = useMemo(() => [...projects.map((project) => project.image), galleryItems[0].image], []);
+
+  useEffect(() => {
+    preloadedImages.forEach((src) => {
+      const image = new Image();
+      image.decoding = "async";
+      image.src = src;
+    });
+  }, [preloadedImages]);
 
   return (
     <main className="min-h-screen bg-[#050505] text-white">
