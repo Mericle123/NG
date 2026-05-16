@@ -1,5 +1,5 @@
 import { type CSSProperties, type MouseEvent, useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import Lenis from "lenis";
 import {
   FiArrowDown,
@@ -408,6 +408,77 @@ function CursorLight() {
         <span ref={labelRef} />
       </div>
     </>
+  );
+}
+
+function PortfolioIntro({ onComplete }: { onComplete: () => void }) {
+  const prefersReducedMotion = useReducedMotion();
+  const duration = prefersReducedMotion ? 560 : 1650;
+
+  useEffect(() => {
+    const timer = window.setTimeout(onComplete, duration);
+    return () => window.clearTimeout(timer);
+  }, [duration, onComplete]);
+
+  return (
+    <motion.div
+      className="intro-overlay"
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0, filter: "blur(10px)" }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      aria-label="Portfolio loading intro"
+    >
+      <motion.div
+        className="intro-vignette"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.9, ease: "easeOut" }}
+      />
+      <motion.div
+        className="intro-red-field"
+        initial={{ opacity: 0, scale: 0.82 }}
+        animate={{ opacity: prefersReducedMotion ? 0.22 : [0, 0.42, 0.26], scale: prefersReducedMotion ? 1 : [0.82, 1.08, 1] }}
+        transition={{ duration: 1.18, ease: [0.16, 1, 0.3, 1] }}
+      />
+      <motion.div
+        className="intro-logo-stage"
+        initial={{ opacity: 0, scale: 0.92, y: 18, filter: "blur(18px)" }}
+        animate={{ opacity: 1, scale: prefersReducedMotion ? 1 : [0.92, 1.025, 1], y: 0, filter: "blur(0px)" }}
+        exit={{ opacity: 0, scale: 0.985, y: -12, filter: "blur(10px)" }}
+        transition={{ duration: prefersReducedMotion ? 0.34 : 1.02, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <motion.div
+          className="intro-logo-frame"
+          initial={{ boxShadow: "0 0 0 rgba(255, 77, 42, 0)" }}
+          animate={{
+            boxShadow: prefersReducedMotion
+              ? "0 28px 90px rgba(0, 0, 0, 0.55)"
+              : [
+                  "0 0 0 rgba(255, 77, 42, 0)",
+                  "0 34px 110px rgba(0, 0, 0, 0.62), 0 0 54px rgba(255, 77, 42, 0.16)",
+                  "0 28px 90px rgba(0, 0, 0, 0.55), 0 0 34px rgba(255, 77, 42, 0.1)",
+                ],
+          }}
+          transition={{ duration: 1.12, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <span className="intro-logo-type" aria-hidden="true">
+            N<span>G</span><i />
+          </span>
+          <motion.span
+            className="intro-dot-pulse"
+            initial={{ scale: 0.6, opacity: 0 }}
+            animate={{ scale: prefersReducedMotion ? 1.8 : [0.6, 2.9, 1.7], opacity: prefersReducedMotion ? 0 : [0, 0.5, 0] }}
+            transition={{ duration: 0.82, delay: 0.42, ease: [0.22, 1, 0.36, 1] }}
+          />
+          <motion.span
+            className="intro-crystal-sweep"
+            initial={{ x: "-150%", opacity: 0 }}
+            animate={{ x: prefersReducedMotion ? "-150%" : "170%", opacity: prefersReducedMotion ? 0 : [0, 0.72, 0] }}
+            transition={{ duration: 0.78, delay: 0.56, ease: [0.16, 1, 0.3, 1] }}
+          />
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -1301,6 +1372,8 @@ function Footer() {
 }
 
 export default function App() {
+  const [introComplete, setIntroComplete] = useState(false);
+
   useEffect(() => {
     const lenis = new Lenis({ lerp: 0.075, wheelMultiplier: 0.85, touchMultiplier: 1.15 });
     let frame = 0;
@@ -1351,16 +1424,23 @@ export default function App() {
       {preloadedImages.map((src) => (
         <link key={src} rel="preload" as="image" href={src} />
       ))}
-      <CursorLight />
-      <Navbar />
-      <Hero />
-      <Work />
-      <About />
-      <Skills />
-      <SoftSkills />
-      <EducationExperience />
-      <Gallery />
-      <Footer />
+      <AnimatePresence>{!introComplete && <PortfolioIntro onComplete={() => setIntroComplete(true)} />}</AnimatePresence>
+      <motion.div
+        initial={false}
+        animate={introComplete ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0.16, y: 18, filter: "blur(8px)" }}
+        transition={{ duration: 0.86, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <CursorLight />
+        <Navbar />
+        <Hero />
+        <Work />
+        <About />
+        <Skills />
+        <SoftSkills />
+        <EducationExperience />
+        <Gallery />
+        <Footer />
+      </motion.div>
     </main>
   );
 }

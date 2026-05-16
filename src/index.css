@@ -341,6 +341,139 @@ body.is-loading .cursor-spinner,
   color: #ff4d2a;
 }
 
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(255, 255, 255, 0.045), transparent 13rem),
+    radial-gradient(circle at 54% 52%, rgba(255, 77, 42, 0.08), transparent 24rem),
+    #030303;
+  color: #fff;
+  isolation: isolate;
+}
+
+.intro-vignette,
+.intro-red-field {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+}
+
+.intro-vignette {
+  z-index: 0;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.035), transparent 32%),
+    radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.36) 54%, rgba(0, 0, 0, 0.92) 100%);
+}
+
+.intro-red-field {
+  left: 50%;
+  top: 50%;
+  z-index: 0;
+  width: min(46vw, 30rem);
+  height: min(46vw, 30rem);
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 77, 42, 0.34), rgba(255, 77, 42, 0.08) 34%, transparent 68%);
+  filter: blur(24px);
+  transform: translate(-50%, -50%);
+}
+
+.intro-logo-stage {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+}
+
+.intro-logo-frame {
+  position: relative;
+  display: grid;
+  width: clamp(92px, 16vw, 132px);
+  aspect-ratio: 1;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1.45rem;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.08), transparent 36%),
+    linear-gradient(180deg, #080808, #010101);
+}
+
+.intro-logo-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0.55rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.05rem;
+  pointer-events: none;
+}
+
+.intro-logo-frame::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.16), transparent 28%, rgba(255, 77, 42, 0.16) 72%, transparent);
+  opacity: 0.62;
+  pointer-events: none;
+}
+
+.intro-logo-type {
+  position: relative;
+  z-index: 3;
+  color: #fff;
+  font-size: clamp(1.8rem, 4.8vw, 3rem);
+  font-weight: 950;
+  letter-spacing: -0.1em;
+  line-height: 1;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "kern";
+}
+
+.intro-logo-type span {
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.intro-logo-type i {
+  position: absolute;
+  right: -0.42rem;
+  bottom: 0.08rem;
+  width: 0.34rem;
+  height: 0.34rem;
+  border-radius: 999px;
+  background: #ff4d2a;
+  box-shadow: 0 0 18px rgba(255, 77, 42, 0.82);
+}
+
+.intro-dot-pulse {
+  position: absolute;
+  left: calc(50% + clamp(1.3rem, 3.4vw, 2.2rem));
+  top: calc(50% + clamp(0.7rem, 1.55vw, 1.15rem));
+  z-index: 2;
+  width: clamp(0.42rem, 1vw, 0.62rem);
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: rgba(255, 77, 42, 0.5);
+  filter: blur(1px);
+  transform: translate(-50%, -50%);
+}
+
+.intro-crystal-sweep {
+  position: absolute;
+  inset-block: -18%;
+  z-index: 4;
+  width: 38%;
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.68) 46%, rgba(255, 255, 255, 0.18) 56%, transparent);
+  filter: blur(0.5px);
+  mix-blend-mode: screen;
+  transform: skewX(-18deg);
+}
+
 .hero-section {
   background:
     radial-gradient(circle at 74% 20%, rgba(255, 77, 42, 0.18), transparent 28rem),
