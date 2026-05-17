@@ -1,4 +1,4 @@
-import { type CSSProperties, type MouseEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type CSSProperties, type MouseEvent, type TouchEvent, type WheelEvent, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import Lenis from "lenis";
 import {
@@ -277,18 +277,126 @@ const galleryItems = portraits.map((image, index) => ({
 }));
 
 const galleryStories = [
-  ["Focused, direct, systems-minded", "A frame about concentration and the quiet confidence behind product decisions.", "Centered portrait, close crop, low distraction, high eye contact."],
-  ["Reflective, intimate, identity-led", "A mirror study that turns the camera back into a design object: observer, subject and interface in one frame.", "Vertical reflection, monochrome contrast, controlled personal presence."],
-  ["Raw, casual, documentary", "A candid study of movement and self-documentation, useful as a human counterpoint to the more polished product work.", "Close perspective, natural distortion, personal texture."],
-  ["In transit, practical, low-light", "A reminder that digital creators move between contexts, solving with whatever space they have.", "Confined interior, dark palette, directional light."],
-  ["Nocturnal, cinematic, restrained", "Low light gives the archive a quieter rhythm, like an interface in dark mode waiting for input.", "Dark field, soft highlights, atmospheric framing."],
-  ["Gentle, warm, observant", "A soft-light frame that brings warmth into the archive and balances the more technical identity of the portfolio.", "Warm ambient light, layered background, calm focal point."],
-  ["Natural, grounded, open", "A garden frame introduces organic texture into an otherwise digital systems language.", "Green accents, natural depth, relaxed posture."],
-  ["Expansive, Bhutan-rooted, calm", "A mountain signal: local context, scale, and the feeling of building from a specific place toward global quality.", "Outdoor space, distant depth, environmental storytelling."],
-  ["Urban, late, electric", "Night city energy gives the archive a modern creative pulse, between product work and lived experience.", "Artificial light, dark contrast, city texture."],
-  ["Soft, atmospheric, uncertain", "Fog becomes a metaphor for early-stage product thinking: shape appears slowly through iteration.", "Muted contrast, blurred horizon, quiet negative space."],
-  ["Quiet, personal, still", "A pause in the archive, showing the reflective side of a systems thinker.", "Low movement, restrained contrast, personal scale."],
-  ["Open, forward, directional", "A road frame for momentum: learning, shipping, and moving into the next version.", "Linear depth, outdoor light, forward visual pull."],
+  {
+    mood: "Focused, direct, systems-minded",
+    lead: "A frame about concentration and the quiet confidence behind product decisions.",
+    composition: "Centered portrait, close crop, low distraction, high eye contact.",
+    role: "Sets the professional tone: focused, precise and comfortable with complex product systems.",
+    craft: "Tight framing and restrained contrast keep attention on expression instead of decoration.",
+    context: "Used as the anchor image for the personal archive because it feels closest to a designer-developer identity.",
+    palette: "Black field, soft skin highlights, controlled white accents.",
+    tags: ["Focus", "Systems", "Identity"],
+  },
+  {
+    mood: "Reflective, intimate, identity-led",
+    lead: "A mirror study that turns the camera back into a design object: observer, subject and interface in one frame.",
+    composition: "Vertical reflection, monochrome contrast, controlled personal presence.",
+    role: "Adds a self-aware layer to the portfolio, showing the person behind the polished product work.",
+    craft: "Reflection and cropping create a quiet editorial rhythm without making the image feel staged.",
+    context: "This frame works as a softer counterpoint to the technical, trust-heavy project sections.",
+    palette: "Deep neutrals, mirror highlights, muted contrast.",
+    tags: ["Reflection", "Identity", "Editorial"],
+  },
+  {
+    mood: "Raw, casual, documentary",
+    lead: "A candid study of movement and self-documentation, useful as a human counterpoint to the more polished product work.",
+    composition: "Close perspective, natural distortion, personal texture.",
+    role: "Keeps the archive from feeling too corporate by adding a direct, lived-in frame.",
+    craft: "The imperfect angle creates energy while the dark surrounding tones keep it consistent with the site.",
+    context: "Placed in the orbit to show that the portfolio has personality, not only output.",
+    palette: "Neutral shadow, skin tone, low-saturation highlights.",
+    tags: ["Candid", "Texture", "Personal"],
+  },
+  {
+    mood: "In transit, practical, low-light",
+    lead: "A reminder that digital creators move between contexts, solving with whatever space they have.",
+    composition: "Confined interior, dark palette, directional light.",
+    role: "Shows working energy and mobility, balancing the high-gloss project presentation.",
+    craft: "Low light and close spacing make the frame feel cinematic without needing extra effects.",
+    context: "A useful bridge between personal life and the disciplined process behind the work.",
+    palette: "Charcoal, soft reflection, muted warm light.",
+    tags: ["Transit", "Process", "Low Light"],
+  },
+  {
+    mood: "Nocturnal, cinematic, restrained",
+    lead: "Low light gives the archive a quieter rhythm, like an interface in dark mode waiting for input.",
+    composition: "Dark field, soft highlights, atmospheric framing.",
+    role: "Extends the portfolio's dark cinematic language into the personal gallery.",
+    craft: "The frame depends on restraint: small highlight areas, large shadow fields, and minimal visual noise.",
+    context: "Works well as a mood piece between more direct portraits.",
+    palette: "Near-black, dim white, subtle warm spill.",
+    tags: ["Cinematic", "Night", "Restraint"],
+  },
+  {
+    mood: "Gentle, warm, observant",
+    lead: "A soft-light frame that brings warmth into the archive and balances the more technical identity of the portfolio.",
+    composition: "Warm ambient light, layered background, calm focal point.",
+    role: "Introduces approachability and emotional range into the portfolio story.",
+    craft: "Layering and warm light soften the interface-heavy feel of the surrounding sections.",
+    context: "A calm pause before the gallery moves back into outdoor and environmental frames.",
+    palette: "Warm highlight, soft darks, quiet midtones.",
+    tags: ["Warmth", "Calm", "Human"],
+  },
+  {
+    mood: "Natural, grounded, open",
+    lead: "A garden frame introduces organic texture into an otherwise digital systems language.",
+    composition: "Green accents, natural depth, relaxed posture.",
+    role: "Connects the portfolio to grounded, real-world context instead of only screen-based work.",
+    craft: "The natural background adds depth and contrast while keeping the subject clear.",
+    context: "Useful for showing a softer, more open part of the personal archive.",
+    palette: "Green texture, dark neutral clothing, daylight highlights.",
+    tags: ["Nature", "Grounded", "Open"],
+  },
+  {
+    mood: "Expansive, Bhutan-rooted, calm",
+    lead: "A mountain signal: local context, scale, and the feeling of building from a specific place toward global quality.",
+    composition: "Outdoor space, distant depth, environmental storytelling.",
+    role: "Places the portfolio inside a Bhutan context and gives the visual system a sense of scale.",
+    craft: "Environmental depth makes the frame breathe, contrasting with the tighter portraits.",
+    context: "Important as a location-aware identity moment: local roots, global product taste.",
+    palette: "Mountain air, muted greens, soft sky contrast.",
+    tags: ["Bhutan", "Scale", "Place"],
+  },
+  {
+    mood: "Urban, late, electric",
+    lead: "Night city energy gives the archive a modern creative pulse, between product work and lived experience.",
+    composition: "Artificial light, dark contrast, city texture.",
+    role: "Adds motion and modernity, keeping the archive from becoming too still.",
+    craft: "Artificial lighting creates a sharper rhythm while preserving the dark visual system.",
+    context: "A useful signal for ambition, pace and contemporary digital culture.",
+    palette: "Black, electric highlights, warm city spill.",
+    tags: ["Urban", "Energy", "Modern"],
+  },
+  {
+    mood: "Soft, atmospheric, uncertain",
+    lead: "Fog becomes a metaphor for early-stage product thinking: shape appears slowly through iteration.",
+    composition: "Muted contrast, blurred horizon, quiet negative space.",
+    role: "Adds conceptual depth to the gallery and echoes the uncertainty of design exploration.",
+    craft: "Soft contrast and negative space make the image feel reflective rather than decorative.",
+    context: "A poetic frame for research, ambiguity and gradual clarity.",
+    palette: "Fog grey, soft darks, desaturated light.",
+    tags: ["Atmosphere", "Research", "Clarity"],
+  },
+  {
+    mood: "Quiet, personal, still",
+    lead: "A pause in the archive, showing the reflective side of a systems thinker.",
+    composition: "Low movement, restrained contrast, personal scale.",
+    role: "Gives the gallery breathing room and keeps the personality understated.",
+    craft: "Stillness and simple framing make the image feel honest and unforced.",
+    context: "Balances the larger, more cinematic frames with something closer and quieter.",
+    palette: "Soft black, natural tone, low contrast.",
+    tags: ["Stillness", "Personal", "Pause"],
+  },
+  {
+    mood: "Open, forward, directional",
+    lead: "A road frame for momentum: learning, shipping, and moving into the next version.",
+    composition: "Linear depth, outdoor light, forward visual pull.",
+    role: "Closes the archive with direction and a sense of continued growth.",
+    craft: "The line of the road gives the frame motion even while the image stays calm.",
+    context: "A final visual metaphor for progression, iteration and future work.",
+    palette: "Open road neutrals, daylight, grounded greens.",
+    tags: ["Momentum", "Future", "Growth"],
+  },
 ];
 
 function Reveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
@@ -345,6 +453,20 @@ function CursorLight() {
       BUTTON: "View",
     };
 
+    const updateCursorState = (target: Element | null) => {
+      const hit = target?.closest(interactiveSelector);
+      const textHit = target?.closest(textSelector);
+      const disabledHit = target?.closest(disabledSelector);
+      const precisionHit = target?.closest(precisionSelector);
+      const cursorLabel = hit?.classList.contains("project-index-row") ? "View" : labels[hit?.tagName ?? ""] ?? "View";
+      cursorRef.current?.classList.toggle("is-hovering", Boolean(hit));
+      cursorRef.current?.classList.toggle("is-gallery", Boolean(target?.closest(".orbital-thumb, .orbital-feature-card")));
+      cursorRef.current?.classList.toggle("is-text", Boolean(textHit) && !hit);
+      cursorRef.current?.classList.toggle("is-disabled", Boolean(disabledHit));
+      cursorRef.current?.classList.toggle("is-precision", Boolean(precisionHit) && !hit);
+      if (labelRef.current) labelRef.current.textContent = hit ? cursorLabel : "";
+    };
+
     const move = (event: PointerEvent) => {
       targetX = event.clientX;
       targetY = event.clientY;
@@ -352,6 +474,7 @@ function CursorLight() {
         lightRef.current.style.setProperty("--x", `${event.clientX}px`);
         lightRef.current.style.setProperty("--y", `${event.clientY}px`);
       }
+      updateCursorState(document.elementFromPoint(event.clientX, event.clientY));
     };
 
     const tick = () => {
@@ -361,20 +484,6 @@ function CursorLight() {
         cursorRef.current.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) translate(-50%, -50%)`;
       }
       frame = requestAnimationFrame(tick);
-    };
-
-    const over = (event: PointerEvent) => {
-      const target = event.target as Element | null;
-      const hit = target?.closest(interactiveSelector);
-      const textHit = target?.closest(textSelector);
-      const disabledHit = target?.closest(disabledSelector);
-      const precisionHit = target?.closest(precisionSelector);
-      cursorRef.current?.classList.toggle("is-hovering", Boolean(hit));
-      cursorRef.current?.classList.toggle("is-gallery", Boolean(target?.closest(".orbital-thumb, .orbital-feature-card")));
-      cursorRef.current?.classList.toggle("is-text", Boolean(textHit) && !hit);
-      cursorRef.current?.classList.toggle("is-disabled", Boolean(disabledHit));
-      cursorRef.current?.classList.toggle("is-precision", Boolean(precisionHit) && !hit);
-      if (labelRef.current) labelRef.current.textContent = hit ? labels[hit.tagName] ?? "View" : "";
     };
 
     const leave = () => {
@@ -387,13 +496,11 @@ function CursorLight() {
     };
 
     window.addEventListener("pointermove", move);
-    window.addEventListener("pointerover", over);
-    window.addEventListener("pointerout", leave);
+    window.addEventListener("pointerleave", leave);
     frame = requestAnimationFrame(tick);
     return () => {
       window.removeEventListener("pointermove", move);
-      window.removeEventListener("pointerover", over);
-      window.removeEventListener("pointerout", leave);
+      window.removeEventListener("pointerleave", leave);
       cancelAnimationFrame(frame);
     };
   }, []);
@@ -1105,6 +1212,8 @@ function GalleryFlowItem({
 
 function Gallery() {
   const ref = useRef<HTMLElement>(null);
+  const storyScrollRef = useRef<HTMLDivElement>(null);
+  const storyTouchY = useRef(0);
   const [active, setActive] = useState(galleryItems[0]);
   const [storyOpen, setStoryOpen] = useState(false);
   const activeIndex = galleryItems.findIndex((item) => item.image === active.image);
@@ -1130,6 +1239,60 @@ function Gallery() {
     const next = galleryItems[(activeIndex + 1) % galleryItems.length];
     setActive(next);
   };
+
+  const scrollStoryContent = (deltaY: number) => {
+    if (!storyScrollRef.current) return;
+    storyScrollRef.current.scrollTop += deltaY;
+  };
+
+  const handleStoryWheel = (event: WheelEvent<HTMLElement>) => {
+    if ((event.target as Element).closest("button, a")) return;
+    event.preventDefault();
+    event.stopPropagation();
+    scrollStoryContent(event.deltaY);
+  };
+
+  const handleStoryTouchStart = (event: TouchEvent<HTMLElement>) => {
+    storyTouchY.current = event.touches[0]?.clientY ?? 0;
+  };
+
+  const handleStoryTouchMove = (event: TouchEvent<HTMLElement>) => {
+    if ((event.target as Element).closest("button, a")) return;
+    const nextY = event.touches[0]?.clientY ?? storyTouchY.current;
+    const deltaY = storyTouchY.current - nextY;
+    storyTouchY.current = nextY;
+    if (!deltaY) return;
+    event.preventDefault();
+    event.stopPropagation();
+    scrollStoryContent(deltaY);
+  };
+
+  useEffect(() => {
+    document.body.classList.toggle("story-modal-open", storyOpen);
+    document.dispatchEvent(new CustomEvent("story-modal-toggle", { detail: storyOpen }));
+    if (!storyOpen) return () => document.body.classList.remove("story-modal-open");
+
+    const scrollKeys = new Set([" ", "PageDown", "PageUp", "End", "Home", "ArrowDown", "ArrowUp"]);
+    const allowStoryScroll = (target: EventTarget | null) => target instanceof Element && Boolean(target.closest(".story-panel"));
+    const preventBackgroundScroll = (event: Event) => {
+      if (!allowStoryScroll(event.target)) event.preventDefault();
+    };
+    const preventBackgroundKeys = (event: KeyboardEvent) => {
+      if (scrollKeys.has(event.key) && !allowStoryScroll(event.target)) event.preventDefault();
+    };
+
+    window.addEventListener("wheel", preventBackgroundScroll, { capture: true, passive: false });
+    window.addEventListener("touchmove", preventBackgroundScroll, { capture: true, passive: false });
+    window.addEventListener("keydown", preventBackgroundKeys, { capture: true });
+
+    return () => {
+      document.body.classList.remove("story-modal-open");
+      document.dispatchEvent(new CustomEvent("story-modal-toggle", { detail: false }));
+      window.removeEventListener("wheel", preventBackgroundScroll, { capture: true });
+      window.removeEventListener("touchmove", preventBackgroundScroll, { capture: true });
+      window.removeEventListener("keydown", preventBackgroundKeys, { capture: true });
+    };
+  }, [storyOpen]);
 
   return (
     <section id="gallery" ref={ref} className="gallery-orbital-section section-shell overflow-hidden border-y border-white/10 px-4 py-24 md:px-8 lg:py-36">
@@ -1192,7 +1355,9 @@ function Gallery() {
                 key={item.image}
                 type="button"
                 onMouseEnter={() => setActive(item)}
+                onClick={() => setActive(item)}
                 onFocus={() => setActive(item)}
+                aria-label={`Select ${item.title} story`}
                 transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
                 style={getOrbitStyle(index)}
                 className={`orbital-thumb ${active.image === item.image ? "is-active" : ""}`}
@@ -1229,30 +1394,55 @@ function Gallery() {
             <button type="button" aria-label="Close story" className="story-backdrop" onClick={() => setStoryOpen(false)} />
             <motion.article
               className="story-panel"
+              onWheel={handleStoryWheel}
+              onTouchStart={handleStoryTouchStart}
+              onTouchMove={handleStoryTouchMove}
               initial={{ opacity: 0, y: 34, scale: 0.96, filter: "blur(14px)" }}
               animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
               exit={{ opacity: 0, y: 24, scale: 0.96, filter: "blur(14px)" }}
               transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
             >
+              <button type="button" aria-label="Close story" onClick={() => setStoryOpen(false)} className="story-close">
+                <FiX />
+              </button>
               <div className="story-media">
                 <img src={active.image} alt={active.title} onError={imageFallback} />
               </div>
               <div className="story-content">
                 <p className="story-kicker">{active.number} / Visual Story</p>
                 <h3>{active.title}</h3>
-                <p className="story-lead">{story[1]}</p>
-                <div className="story-grid">
-                  <div>
-                    <span>Mood</span>
-                    <strong>{story[0]}</strong>
+                <div ref={storyScrollRef} className="story-scroll">
+                  <p className="story-lead">{story.lead}</p>
+                  <div className="story-grid">
+                    <div>
+                      <span>Mood</span>
+                      <strong>{story.mood}</strong>
+                    </div>
+                    <div>
+                      <span>Composition</span>
+                      <strong>{story.composition}</strong>
+                    </div>
+                    <div>
+                      <span>Portfolio role</span>
+                      <strong>{story.role}</strong>
+                    </div>
+                    <div>
+                      <span>Visual craft</span>
+                      <strong>{story.craft}</strong>
+                    </div>
+                    <div>
+                      <span>Context</span>
+                      <strong>{story.context}</strong>
+                    </div>
+                    <div>
+                      <span>Palette</span>
+                      <strong>{story.palette}</strong>
+                    </div>
                   </div>
-                  <div>
-                    <span>Composition</span>
-                    <strong>{story[2]}</strong>
-                  </div>
-                  <div>
-                    <span>Portfolio role</span>
-                    <strong>Human texture inside a technical product-design identity.</strong>
+                  <div className="story-tags" aria-label="Story tags">
+                    {story.tags.map((tag) => (
+                      <span key={tag}>{tag}</span>
+                    ))}
                   </div>
                 </div>
                 <div className="story-actions">
@@ -1400,10 +1590,18 @@ export default function App() {
       window.history.pushState(null, "", id);
     };
 
+    const onStoryModalToggle = (event: Event) => {
+      const open = (event as CustomEvent<boolean>).detail;
+      if (open) lenis.stop();
+      else lenis.start();
+    };
+
     document.addEventListener("click", onAnchorClick);
+    document.addEventListener("story-modal-toggle", onStoryModalToggle);
 
     return () => {
       document.removeEventListener("click", onAnchorClick);
+      document.removeEventListener("story-modal-toggle", onStoryModalToggle);
       cancelAnimationFrame(frame);
       lenis.destroy();
     };
@@ -1424,14 +1622,14 @@ export default function App() {
       {preloadedImages.map((src) => (
         <link key={src} rel="preload" as="image" href={src} />
       ))}
+      <CursorLight />
       <AnimatePresence>{!introComplete && <PortfolioIntro onComplete={() => setIntroComplete(true)} />}</AnimatePresence>
+      <Navbar />
       <motion.div
         initial={false}
-        animate={introComplete ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0.16, y: 18, filter: "blur(8px)" }}
+        animate={{ opacity: introComplete ? 1 : 0.16 }}
         transition={{ duration: 0.86, ease: [0.22, 1, 0.36, 1] }}
       >
-        <CursorLight />
-        <Navbar />
         <Hero />
         <Work />
         <About />
